@@ -27,10 +27,10 @@
 </head>
 <body>
   <h1>📷 QR 코드 스캔</h1>
-  <p>카메라를 통해 QR 코드를 스캔하면 해당 페이지로 이동합니다.</p>
+  <div id="test" style="color: black; font-size: 2em;"></div>
 
   <div id="reader"></div>
-  <div id="test"></div>
+  
   <button id="start-button">카메라 스캔 시작</button>
 
   <script>
@@ -42,7 +42,7 @@
           const cameraId = devices[0].id;
           const Test = document.getElementById("test");
 
-          Text = "이벤트에 참여해주셔서 감사합니다!" + '<br>' + "경품을 이미 수령하셨습니다.";
+          Test = "이벤트에 참여해주셔서 감사합니다!" + '<br>' + "경품을 이미 수령하셨습니다.";
 
           html5QrCode.start(
             cameraId,
@@ -77,3 +77,4 @@
   </script>
 </body>
 </html>
+
