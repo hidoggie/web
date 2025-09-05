@@ -38,7 +38,7 @@
     const Test = document.getElementById("test");
 
     const Text = "이벤트에 참여해주셔서 감사합니다!" + '<br>' + "경품을 이미 수령하셨습니다.";
-    Test.innerHTML = Text;
+    Test.textContent = Text;
 
     document.getElementById("start-button").addEventListener("click", () => {
       Html5Qrcode.getCameras().then(devices => {
@@ -78,6 +78,7 @@
   </script>
 </body>
 </html>
+
 
 
 
