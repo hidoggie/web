@@ -35,16 +35,16 @@
 
   <script>
     const html5QrCode = new Html5Qrcode("reader");
+    const Test = document.getElementById("test");
+
+    const Text = "이벤트에 참여해주셔서 감사합니다!" + '<br>' + "경품을 이미 수령하셨습니다.";
+    Test.innerHTML = Text;
 
     document.getElementById("start-button").addEventListener("click", () => {
       Html5Qrcode.getCameras().then(devices => {
         if (devices && devices.length) {
           const cameraId = devices[0].id;
-          const Test = document.getElementById("test");
-
-          const Text = "이벤트에 참여해주셔서 감사합니다!" + '<br>' + "경품을 이미 수령하셨습니다.";
-          Test.innerHTML = Text;
-
+          
           html5QrCode.start(
             cameraId,
             {
@@ -78,5 +78,6 @@
   </script>
 </body>
 </html>
+
 
 
