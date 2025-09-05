@@ -42,7 +42,8 @@
           const cameraId = devices[0].id;
           const Test = document.getElementById("test");
 
-          Test = "이벤트에 참여해주셔서 감사합니다!" + '<br>' + "경품을 이미 수령하셨습니다.";
+          const Text = "이벤트에 참여해주셔서 감사합니다!" + '<br>' + "경품을 이미 수령하셨습니다.";
+          Test.innerHTML = Text;
 
           html5QrCode.start(
             cameraId,
@@ -77,4 +78,5 @@
   </script>
 </body>
 </html>
+
 
