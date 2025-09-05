@@ -1,1 +1,79 @@
-<html><body><h1>It works!</h1></body></html>
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>QR 코드 스캐너</title>
+
+  <!-- QR 코드 라이브러리 로드 (정상 경로) -->
+  <script src="https://cdn.jsdelivr.net/npm/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      padding: 20px;
+    }
+    #reader {
+      width: 300px;
+      margin: auto;
+    }
+    #start-button {
+      padding: 12px 20px;
+      font-size: 1em;
+      margin-top: 20px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h1>📷 QR 코드 스캔</h1>
+  <p>카메라를 통해 QR 코드를 스캔하면 해당 페이지로 이동합니다.</p>
+
+  <div id="reader"></div>
+  <div id="test"></div>
+  <button id="start-button">카메라 스캔 시작</button>
+
+  <script>
+    const html5QrCode = new Html5Qrcode("reader");
+
+    document.getElementById("start-button").addEventListener("click", () => {
+      Html5Qrcode.getCameras().then(devices => {
+        if (devices && devices.length) {
+          const cameraId = devices[0].id;
+          const Test = document.getElementById("test");
+
+          Text = "이벤트에 참여해주셔서 감사합니다!" + '<br>' + "경품을 이미 수령하셨습니다.";
+
+          html5QrCode.start(
+            cameraId,
+            {
+              fps: 10,
+              qrbox: { width: 250, height: 250 }
+            },
+            (decodedText) => {
+              console.log("스캔 성공:", decodedText);
+
+              if (/^https?:\/\//.test(decodedText)) {
+                window.location.href = decodedText;
+              } else {
+                alert("QR 코드 내용: " + decodedText);
+              }
+
+              html5QrCode.stop().then(() => {
+                document.getElementById("reader").innerHTML = "";
+              });
+            },
+            (errorMessage) => {
+              console.warn("스캔 실패:", errorMessage);
+            }
+          );
+        } else {
+          alert("카메라를 찾을 수 없습니다.");
+        }
+      }).catch(err => {
+        alert("카메라 접근 오류: " + err);
+      });
+    });
+  </script>
+</body>
+</html>
