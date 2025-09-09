@@ -29,6 +29,9 @@
     dialog {
   border-radius: .2rem;
   min-width: 11rem;
+  position: fixed; /* Essential for custom positioning */
+  top: 50px;       /* Example: 50px from the top */
+  left: 20%;
 
   fieldset {
     margin: 1rem 0;
@@ -52,7 +55,6 @@
   h2 {
     font-size: 1.3rem;
     margin-top: 0;
-    max-width: 8.5rem;
   }
 
   [ method = dialog] {
@@ -60,7 +62,7 @@
       font-size: x-large;
       padding: .2rem;
       height: 2.4rem;
-      width: 2.4rem;
+      width: 50%;
       float: right;
     }
   }
@@ -93,4 +95,5 @@
   </script>
 </body>
 </html>
+
 
