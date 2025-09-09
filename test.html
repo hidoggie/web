@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>QR 코드 스캐너</title>
+
+  <!-- QR 코드 라이브러리 로드 (정상 경로) -->
+  <script src="https://cdn.jsdelivr.net/npm/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      padding: 20px;
+    }
+    #reader {
+      width: 300px;
+      margin: auto;
+    }
+    #start-button {
+      padding: 12px 20px;
+      font-size: 1em;
+      margin-top: 20px;
+      cursor: pointer;
+    }
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+  <h1>📷 QR 코드 스캔</h1>
+  <p>카메라를 통해 QR 코드를 스캔하면 해당 페이지로 이동합니다.</p>
+
+  <div id="reader"></div>
+  <div id="test"></div>
+  <button id="start-button">카메라 스캔 시작</button>
+
+  <dialog id="myAlertDialog" class="hidden">
+       <h2>안내!</h2>
+       <p>축하합니다! <br>모든 행성 스탬프를 모았습니다. <br>부스로 이동하여 QR코드 스캔 후 경품을 수령하세요!</p>
+       <button onclick="myAlertDialog.close()">확인</button>
+  </dialog>
+
+  <script>
+
+
+    document.getElementById("start-button").addEventListener("click", () => {
+                const Dialog = document.querySelector('dialog');
+                Dialog.classList.remove('hidden');
+                Dialog.showModal();
+
+    });
+  </script>
+</body>
+</html>
