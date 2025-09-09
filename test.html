@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <title>QR 코드 스캐너</title>
+  
 
   <!-- QR 코드 라이브러리 로드 (정상 경로) -->
   <script src="https://cdn.jsdelivr.net/npm/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
@@ -24,6 +25,46 @@
       cursor: pointer;
     }
     .hidden { display: none; }
+
+    dialog {
+  border-radius: .2rem;
+  min-width: 11rem;
+
+  fieldset {
+    margin: 1rem 0;
+
+    button {
+      margin: .3rem 0;
+      padding: .4rem;
+      padding-left: 1.4rem;
+      max-width: 12rem;
+      text-align: left;
+      width: 100%;
+    }
+    
+    ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+  }
+
+  h2 {
+    font-size: 1.3rem;
+    margin-top: 0;
+    max-width: 8.5rem;
+  }
+
+  [ method = dialog] {
+    button {
+      font-size: x-large;
+      padding: .2rem;
+      height: 2.4rem;
+      width: 2.4rem;
+      float: right;
+    }
+  }
+}
   </style>
 </head>
 <body>
@@ -52,3 +93,4 @@
   </script>
 </body>
 </html>
+
