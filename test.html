@@ -26,47 +26,19 @@
     }
     .hidden { display: none; }
 
-    dialog {
-  border-radius: .2rem;
-  min-width: 11rem;
-  position: fixed; /* Essential for custom positioning */
-  bottom: 65vh;
-
-  fieldset {
-    margin: 1rem 0;
-
-    button {
-      margin: .3rem 0;
-      padding: .4rem;
-      padding-left: 1.4rem;
-      max-width: 12rem;
-      text-align: left;
-      width: 100%;
-    }
-    
-    ul {
-      list-style: none;
-      margin: 0;
-      padding: 0;
-    }
+  dialog {
+    border-radius: .2rem;
+    min-width: 11rem;
+    position: fixed; /* Essential for custom positioning */
+    bottom: 65vh;
   }
 
-  h2 {
+  .AlertInfo {
     color: #facc15;
     font-size: 2rem;
     margin-top: 0;
   }
 
-  [ method = dialog] {
-    button {
-      font-size: x-large;
-      padding: .2rem;
-      height: 2.4rem;
-      width: 50%;
-      float: right;
-    }
-  }
-}
   </style>
 </head>
 <body>
@@ -78,7 +50,7 @@
   <button id="start-button">카메라 스캔 시작</button>
 
   <dialog id="myAlertDialog" class="hidden">
-       <h2>안내!</h2>
+       <h2 class="AlertInfo">안내!</h2>
        <p>축하합니다! <br>모든 행성 스탬프를 모았습니다. <br>부스로 이동하여 QR코드 스캔 후 경품을 수령하세요!</p>
        <button onclick="myAlertDialog.close()" style="width: 10vw; height: 2rem;">확인</button>
   </dialog>
@@ -95,6 +67,7 @@
   </script>
 </body>
 </html>
+
 
 
 
