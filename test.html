@@ -30,8 +30,7 @@
   border-radius: .2rem;
   min-width: 11rem;
   position: fixed; /* Essential for custom positioning */
-  top: 50px;       /* Example: 50px from the top */
-  left: 20%;
+  bottom: 65vh;
 
   fieldset {
     margin: 1rem 0;
@@ -53,7 +52,8 @@
   }
 
   h2 {
-    font-size: 1.3rem;
+    color: #facc15;
+    font-size: 2rem;
     margin-top: 0;
   }
 
@@ -80,7 +80,7 @@
   <dialog id="myAlertDialog" class="hidden">
        <h2>안내!</h2>
        <p>축하합니다! <br>모든 행성 스탬프를 모았습니다. <br>부스로 이동하여 QR코드 스캔 후 경품을 수령하세요!</p>
-       <button onclick="myAlertDialog.close()">확인</button>
+       <button onclick="myAlertDialog.close()" style="width: 10vw; height: 2rem;">확인</button>
   </dialog>
 
   <script>
@@ -95,5 +95,6 @@
   </script>
 </body>
 </html>
+
 
 
