@@ -137,10 +137,10 @@
      //       modelSelectionBar.innerHTML = '';
             
             FirstBtn.style.backgroundImage = `url('${models[0].thumbnail}')`;
-            FirstBtn.setAttribute("onClick", switchSrc(FirstBtn, models[0].path));
+            FirstBtn.setAttribute("onClick", "switchSrc(FirstBtn, '${models[0].path}')");
 
             SecondBtn.style.backgroundImage = `url('${models[1].thumbnail}')`;
-            SecondBtn.setAttribute("onClick", switchSrc(SecondBtn, models[1].path));
+            SecondBtn.setAttribute("onClick", "switchSrc(SecondBtn, '${models[1].path}')");
         }   
 
         init();
