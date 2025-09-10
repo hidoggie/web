@@ -92,7 +92,7 @@
 <div class="overlay-ui bottom-bar">
         <button id="map-btn" class="ui-button">🗺️ 행성 지도</button>
         <button id="capture-btn"></button>
-        <button id="close-btn" class="ui-button">❌ 닫기</button>
+        <button id="close-btn" class="ui-button" onclick="windowClose();">❌ 닫기</button>
 </div>
 
 <script>
@@ -274,7 +274,9 @@
         captureBtn.addEventListener('touchend', (e) => { e.preventDefault(); captureBtn.dispatchEvent(new MouseEvent('mouseup')); });
 
         mapBtn.onclick = () => window.location.href = './joayong-map.html';
-        closeBtn.onclick = () => window.close();
+        function windowClose() {
+            window.open("", "_self").close();
+        }
 
         // 페이지 초기화 시작
         init();
@@ -283,4 +285,5 @@
 </body>
 
 </html>
+
 
