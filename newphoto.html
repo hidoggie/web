@@ -135,6 +135,9 @@
 
         function initModelSelectionBar(models) {
      //       modelSelectionBar.innerHTML = '';
+
+            modelViewer.src = "./models/" + models[0].path + ".glb";
+            modelViewer.iosSrc = "./models/" + models[0].path + ".usdz";
             
             const FirstPath = models[0].path;
             FirstBtn.style.backgroundImage = `url('${models[0].thumbnail}')`;
