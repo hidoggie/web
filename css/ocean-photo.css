@@ -208,7 +208,7 @@ footer {
         display: flex;
       }
 
-      .slide.selected {
+      .selected {
         border: 2px solid #000000;
       }
 
@@ -219,5 +219,6 @@ footer {
       .slide:focus-visible {
         outline: 1px solid #ffffff;
       }
+
 
 
