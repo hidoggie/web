@@ -24,7 +24,7 @@ body {
 
 .BackButton {
         background-color: White;
-        background-image: url("https://guide1.ivyro.net/oceanbreeze/AR/image/back.png");
+        background-image: url("./images/back.png");
         background-size: cover;
         background-position: center;
         border: none;
@@ -219,3 +219,4 @@ footer {
       .slide:focus-visible {
         outline: 1px solid #ffffff;
       }
+
