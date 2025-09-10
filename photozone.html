@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AR 포토존</title>
+    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.5.0/model-viewer.min.js"></script>
+    <style>
+        html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; font-family: sans-serif; }
+        #ar-container { width: 100%; height: 100%; position: relative; }
+        
+        model-viewer {
+            width: 100%;
+            height: 90vh;
+            --ar-button-vertical-align: bottom;
+            --ar-button-horizontal-align: left;
+            --ar-button-margin: 20px;
+        }
+
+        #ar-prompt {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 1.2em;
+        }
+
+        #model-selection-bar {
+            position: fixed; bottom: 90px; left: 0;
+            width: 100%; padding: 10px 0;
+            display: flex; justify-content: center;
+            gap: 10px; z-index: 10;
+            box-sizing: border-box; overflow-x: auto;
+        }
+        .model-thumbnail {
+            width: 60px; height: 60px; object-fit: cover;
+            border-radius: 8px; cursor: pointer; border: 2px solid transparent;
+        }
+        .model-thumbnail.selected { border-color: #007bff;  border: 2px solid;
+        }
+
+        
+        /* 셔터 및 네비게이션 버튼 UI */
+        .overlay-ui { position: fixed; width: 100%; z-index: 10; box-sizing: border-box; }
+        .top-bar { top: 0; display: flex; justify-content: space-between; padding: 20px; }
+        .bottom-bar { bottom: 0; display: flex; justify-content: space-between; padding: 20px; }
+        .ui-button { width: 7.5rem; padding: 10px 10px; font-size: 1em; border-radius: 5px; border: none; background-color: rgba(0,0,0,0.6); color: white; cursor: pointer; }
+        #capture-btn { width: 4rem; height: 4rem; border-radius: 50%; background-color: white; border: 5px solid rgba(0, 0, 0, 0.5); }
+        .hidden { display: none; }
+
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+
+    </style>
+    
+</head>
+<body>
+
+<div id="ar-container">
+    <model-viewer
+        id="planet-viewer"
+        ar
+        ar-modes="webxr scene-viewer quick-look"
+        camera-controls
+        touch-action="pan-y"
+        ar-placement="floor"
+        shadow-intensity="1"
+        alt="AR 3D 모델">        
+    </model-viewer>
+    <div id="ar-prompt" slot="ar-button">AR을 시작하려면 주변 바닥을 비춰주세요</div>
+</div>
+
+<!--div class="overlay top-bar">
+    <button id="map-btn" class="ui-button">🗺️ 행성 지도</button>
+    <button id="close-btn" class="ui-button">❌ 닫기</button>
+</div-->
+
+<div id="model-selection-bar"></div>
+<div class="overlay-ui bottom-bar">
+        <button id="map-btn" class="ui-button">🗺️ 행성 지도</button>
+        <button id="capture-btn"></button>
+        <button id="close-btn" class="ui-button">❌ 닫기</button>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const modelViewer = document.getElementById('planet-viewer');
+        const modelSelectionBar = document.getElementById('model-selection-bar');
+        const captureBtn = document.getElementById('capture-btn');
+        const mapBtn = document.getElementById('map-btn');
+        const closeBtn = document.getElementById('close-btn');
+
+        let pressTimer = null;
+        let isRecording = false;
+        let mediaRecorder = null;
+        let recordedChunks = [];
+        
+        // --- 1. 행성별로 연관된 모델 목록을 정의 ---
+        const planetRelatedModels = {
+            earth: [
+                { id: 'earth_globe', name: '지구본', thumbnail: './images/earth_thumb.png', path: './models/saturn_planet.glb', iosPath: './models/earth_globe.usdz', scale: '0.5 0.5 0.5' },
+                { id: 'space_station', name: '우주정거장', thumbnail: './images/mars_thumb.png', path: './models/jupiter_planet.glb', iosPath: './models/earth_globe.usdz', scale: '0.2 0.2 0.2' },
+            ],
+            mars: [
+                { id: 'mars_rover', name: '탐사 로버', thumbnail: './images/rover_thumb.png', path: './models/rover.glb', iosPath: './models/earth_globe.usdz', scale: '0.4 0.4 0.4' },
+                { id: 'mars_planet', name: '화성', thumbnail: './images/mars_thumb.png', path: './models/mars.glb', iosPath: './models/earth_globe.usdz', scale: '0.5 0.5 0.5' },
+            ],
+            jupiter: [
+                { id: 'earth_globe', name: '지구본', thumbnail: './images/earth_globe_thumb.png', path: '/static/assets/models/earth_globe.glb', iosPath: './models/earth_globe.usdz', scale: '0.5 0.5 0.5' },
+                { id: 'space_station', name: '우주정거장', thumbnail: './images/iss_thumb.png', path: '/static/assets/models/iss.glb', iosPath: './models/earth_globe.usdz', scale: '0.2 0.2 0.2' },
+            ],
+            saturn: [
+                { id: 'mars_rover', name: '탐사 로버', thumbnail: './images/rover_thumb.png', path: '/static/assets/models/rover.glb', iosPath: './models/earth_globe.usdz', scale: '0.4 0.4 0.4' },
+                { id: 'mars_planet', name: '화성', thumbnail: './images/mars_thumb.png', path: '/static/assets/models/mars.glb', iosPath: './models/earth_globe.usdz', scale: '0.5 0.5 0.5' },
+            ],
+            uranus: [
+                { id: 'earth_globe', name: '지구본', thumbnail: './images/earth_globe_thumb.png', path: '/static/assets/models/earth_globe.glb', iosPath: './models/earth_globe.usdz', scale: '0.5 0.5 0.5' },
+                { id: 'space_station', name: '우주정거장', thumbnail: './images/iss_thumb.png', path: '/static/assets/models/iss.glb', iosPath: './models/earth_globe.usdz', scale: '0.2 0.2 0.2' },
+            ],
+            neptune: [
+                { id: 'mars_rover', name: '탐사 로버', thumbnail: './images/rover_thumb.png', path: '/static/assets/models/rover.glb', iosPath: './models/earth_globe.usdz', scale: '0.4 0.4 0.4' },
+                { id: 'mars_planet', name: '화성', thumbnail: './images/mars_thumb.png', path: '/static/assets/models/mars.glb', iosPath: './models/earth_globe.usdz', scale: '0.5 0.5 0.5' },
+            ],
+            // ... 다른 행성들의 모델 목록도 동일하게 정의 ...
+        };
+
+        // --- 2. 페이지 초기화 ---
+        function init() {
+            const urlParams = new URLSearchParams(window.location.search);
+            // URL에서 'planet' 파라미터를 읽어오고, 없으면 'earth'를 기본값으로 사용
+            const planetId = urlParams.get('planet') || 'earth';
+            const modelsToShow = planetRelatedModels[planetId];
+
+            if (!modelsToShow) {
+                alert("해당 행성의 모델 정보를 찾을 수 없습니다.");
+                return;
+            }
+            
+            initModelSelectionBar(modelsToShow);
+        }
+
+        // --- 3. 모델 선택 바를 생성하는 함수 ---
+        function initModelSelectionBar(models) {
+            modelSelectionBar.innerHTML = '';
+            models.forEach((model, index) => {
+                const img = document.createElement('img');
+                img.src = model.thumbnail;
+                img.alt = model.name;
+                img.classList.add('model-thumbnail');
+                
+                img.addEventListener('click', () => {
+                    document.querySelectorAll('.model-thumbnail').forEach(thumb => thumb.classList.remove('selected'));
+                    img.classList.add('selected');
+                    // model-viewer의 src와 scale 속성을 동적으로 변경
+                    modelViewer.src = model.path;
+                    modelViewer.scale = model.scale;
+                });
+                modelSelectionBar.appendChild(img);
+                
+                // 첫 번째 모델을 기본으로 로드
+                if (index === 0) {
+                    img.classList.add('selected');
+                    modelViewer.src = model.path;
+                    modelViewer.setAttribute('ios-src', model.iosPath);
+                    modelViewer.setAttribute('scale', model.scale);
+                }
+            });
+        }
+
+        // AR 모드가 활성화되면 자동으로 AR 버튼 클릭 (사용자 편의)
+        modelViewer.addEventListener('load', () => {
+            // 3D 모델 로드가 완료되면, AR 모드를 직접 활성화합니다.
+            modelViewer.activateAR();
+        });
+
+        // --- 1. 사진 촬영 함수 (model-viewer 내장 기능 사용) ---
+        async function takePicture() {
+            try {
+                const blob = await modelViewer.toBlob({mimeType: 'image/png'});
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `ar_photo_${new Date().getTime()}.png`;
+                a.click();
+                URL.revokeObjectURL(url);
+            } catch(e) {
+                alert("사진 캡처에 실패했습니다: " + e.message);
+            }
+        }
+
+        // --- 2. 동영상 녹화 함수 (브라우저 화면 녹화 기능 사용) ---
+        async function startRecording() {
+            console.log("녹화를 시작합니다...");
+            isRecording = true;
+            captureBtn.style.border = '5px solid red'; // 녹화 중임을 시각적으로 표시
+
+            try {
+                // 현재 화면을 녹화 대상으로 지정
+                const stream = await navigator.mediaDevices.getDisplayMedia({
+                    video: { mediaSource: "screen" }
+                });
+                
+                mediaRecorder = new MediaRecorder(stream, { mimeType: 'video/webm' });
+                
+                mediaRecorder.ondataavailable = (event) => {
+                    if (event.data.size > 0) recordedChunks.push(event.data);
+                };
+                
+                mediaRecorder.onstop = () => {
+                    const blob = new Blob(recordedChunks, { type: 'video/webm' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `ar_video_${new Date().getTime()}.webm`;
+                    a.click();
+                    URL.revokeObjectURL(url);
+                    recordedChunks = [];
+                    // 스트림 트랙 중지
+                    stream.getTracks().forEach(track => track.stop());
+                };
+                
+                mediaRecorder.start();
+            } catch (e) {
+                console.error("녹화 시작 오류:", e);
+                alert("화면 녹화를 시작할 수 없습니다. 브라우저의 화면 공유/녹화 권한을 확인해주세요.");
+                stopRecording(); // 오류 발생 시 상태 초기화
+            }
+        }
+        
+        function stopRecording() {
+            if (mediaRecorder && mediaRecorder.state === "recording") {
+                mediaRecorder.stop();
+            }
+            isRecording = false;
+            captureBtn.style.border = '5px solid rgba(0, 0, 0, 0.5)';
+            console.log("녹화를 중지합니다.");
+        }
+        
+        // --- 3. 캡처 버튼 이벤트 (짧게/길게 누르기 구분) ---
+        captureBtn.addEventListener('mousedown', () => {
+            pressTimer = setTimeout(() => {
+                startRecording();
+            }, 500); // 0.5초 이상 누르면 녹화로 간주
+        });
+
+        // --- 4. 캡처 및 네비게이션 로직 ---
+        captureBtn.addEventListener('mouseup', () => {
+            clearTimeout(pressTimer); // 타이머 취소
+            if (isRecording) {
+                stopRecording();
+            } else {
+                takePicture();
+            }
+        });
+        
+        // 모바일 터치 이벤트 지원
+        captureBtn.addEventListener('touchstart', (e) => { e.preventDefault(); captureBtn.dispatchEvent(new MouseEvent('mousedown')); });
+        captureBtn.addEventListener('touchend', (e) => { e.preventDefault(); captureBtn.dispatchEvent(new MouseEvent('mouseup')); });
+
+        mapBtn.onclick = () => window.location.href = './joayong-map.html';
+        closeBtn.onclick = () => window.close();
+
+        // 페이지 초기화 시작
+        init();
+    });
+</script>
+</body>
+</html>
