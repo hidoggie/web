@@ -145,10 +145,7 @@
             SecondBtn.setAttribute("onClick", `switchSrc(FirstBtn, '${SecondPath}')`);
         }   
 
-        init();
-    });
-
-    function switchSrc(element, name)  {
+        window.switchSrc = (element, name) => {
         const base = "./models/" + name;
         const ImgBase = "./images/" + name;
         modelViewer.src = base + ".glb";
@@ -167,6 +164,11 @@
           // Keep slider interactions from affecting the XR scene.
           ev.preventDefault();
         });
+
+        init();
+    });
+
+    
 
     </script>
     <script
