@@ -132,10 +132,10 @@
         function initModelSelectionBar(models) {
             modelSelectionBar.innerHTML = '';
             
-            FirstBtn.style.backgroundImage = url(models[0].thumbnail);
+            FirstBtn.style.backgroundImage = "url(models[0].thumbnail)";
             FirstBtn.setAttribute("onClick", switchSrc(this, models[0].path));
 
-            SecondBtn.style.backgroundImage = url(models[1].thumbnail);
+            SecondBtn.style.backgroundImage = "url(models[1].thumbnail)";
             SecondBtn.setAttribute("onClick", switchSrc(this, models[1].path));
         }   
 
@@ -168,4 +168,5 @@
     <link rel="stylesheet" href="./css/ocean-photo.css" />
 
   </body>
+
 </html>
