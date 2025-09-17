@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, user-scalable=no"
+    />
+    <title>QR 코드 스캐너</title>
+    <script src="./js/html5-qrcode.min.js" type="text/javascript"></script>
+    
+    <Style>
+    body {
+      margin: 0;
+      background-color: #000;
+      color: #fff;
+      font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, 'Helvetica Neue', 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    h1 {
+      font-size: 1.8em;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+
+    p {
+      font-size: 1em;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    #reader {
+      width: 100%;
+      max-width: 400px;
+      margin: 20px auto;
+    }
+
+    button, input[type="file"] {
+      background-color: #1e1e1e;
+      color: #fff;
+      border: 5px solid #444;
+      padding: 12px 20px;
+      margin: 10px;
+      border-radius: 8px;
+      font-size: 1em;
+      cursor: pointer;
+      width: 100%;
+      max-width: 300px;
+    }
+
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 1.5em;
+      }
+
+      button {
+        font-size: 0.9em;
+      }
+    }
+    
+     .hidden { display: none; }
+
+    </Style>
+</head>
+<body>
+    <h1>📷 QR 코드 스캔</h1>
+    <p>카메라를 통해 QR 코드를 스캔하면<br> 해당 페이지로 이동합니다.</p>
+
+    <div id="reader"></div>
+    <button id="start-button">카메라 스캔 시작</button>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const startButton = document.getElementById("start-button");
+        const readerDiv = document.getElementById("reader");
+
+        // ✨ 1. 변수를 let으로 선언하고, 객체는 나중에 생성합니다.
+        let html5QrCode;
+
+        // 스캔 성공 시 실행될 함수
+        function onScanSuccess(decodedText, decodedResult) {
+            console.log(`스캔 성공: ${decodedText}`);
+            
+            // 스캔이 완료되면 스캐너를 멈추고 결과를 처리합니다.
+            html5QrCode.stop().then(() => {
+                readerDiv.innerHTML = "<h2>스캔 완료!</h2>";
+                
+                if (decodedText.startsWith('http')) {
+                    window.location.href = decodedText;
+                } else {
+                    alert("유효하지 않은 QR 코드입니다: " + decodedText);
+                    startButton.classList.remove("hidden"); // 다시 스캔할 수 있도록 버튼 표시
+                }
+            }).catch(err => {
+                console.error("스캐너 중지 오류", err);
+            });
+        }
+
+        // 스캔 실패 시 실행될 함수 (보통 무시)
+        function onScanFailure(error) {}
+
+        // ✨ 2. 페이지 로드 시 바로 스캐너를 시작하는 방식으로 변경
+        // 이렇게 하면 사용자가 버튼을 누를 필요가 없어 더 편리합니다.
+        try {
+            html5QrCode = new Html5Qrcode("reader");
+            const config = {
+                fps: 10,
+                qrbox: { width: 250, height: 250 },
+            };
+
+            // ✨ 3. 후면 카메라 사용을 start 함수에 명확히 전달합니다.
+            html5QrCode.start(
+                { facingMode: "environment" }, 
+                config,
+                onScanSuccess,
+                onScanFailure
+            );
+        } catch (err) {
+            console.error("QR 스캐너 시작 오류:", err);
+            readerDiv.classList.add("hidden");
+            startButton.style.display = "block";
+            startButton.textContent = "오류: 카메라를 시작할 수 없습니다.";
+        }
+    });
+    </script>
+
+</body>
+</html>
