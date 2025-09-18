@@ -282,7 +282,7 @@
             <a-entity scale="0 0 0" animation="property: scale; to: 1 1 1; loop: false; dur: 3000">
               <a-entity
                 id="planet-model"
-                position="0 1.6 0"
+                position="0 1.6 -10"
                 rotation="10 -15 0"
                 animation-mixer
                 selective-click>
@@ -299,7 +299,7 @@
             </a-entity>
             
             <a-entity movement-controls="fly: true">
-            <a-entity cursor="rayOrigin: mouse" raycaster="objects: #joayong-model" position="0 1.6 0" camera look-controls="touchEnabled: false; mouseEnabled: false; enabled: false" wasd-controls></a-entity>
+            <a-entity cursor="rayOrigin: mouse" raycaster="objects: #joayong-model" position="0 1.6 0" camera look-controls="touchEnabled: false; mouseEnabled: false;" wasd-controls></a-entity>
             <!--a-light type="ambient" intensity="2"></a-light-->
         </a-scene>
 
