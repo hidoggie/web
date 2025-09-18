@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, user-scalable=no"
+    />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+
+    <title>AR 조야용을 찾아라</title>
+      <!-- Pretendard Font -->
+    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.8/dist/web/static/pretendard.css" />
+
+    <script src="./js/aframe150.js"></script>
+    <script src="./js/aframe-ar.js"></script>
+    <script src="./js/aframe-extras.min.js"></script>
+
+    <script>
+        function setScreenHeight() {
+            let vh = window.innerHeight * 0.01;
+            document.documentElement.style.setProperty('--vh', `${vh}px`);
+        }
+        window.addEventListener('resize', setScreenHeight);
+        setScreenHeight(); // 최초 실행
+    </script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: calc(var(--vh, 1vh) * 100);
+            overflow: hidden; /* 불필요한 스크롤바 방지 */
+        }
+
+        a-scene {
+            width: 100%;
+            height: calc(var(--vh, 1vh) * 100);
+        }
+
+        body { font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, 'Helvetica Neue', 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif;
+               text-align: center; background-color: #111827; color: white; margin: 0;  font-size: 14px; line-height: 1.5;}
+        .container { max-width: 448px; margin: 0 auto; padding: 16px; min-height: calc(var(--vh, 1vh) * 100); }
+
+        .modal {
+            position: fixed;
+            z-index: 20;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: calc(var(--vh, 1vh) * 100);
+            background-color: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-content {
+            background-color: white;
+            color: black;
+            padding: 20px 40px;
+            border-radius: 10px;
+            font-size: 1.2em;
+            text-align: center;
+        }
+        .hidden { display: none; }
+        #video-player { width: 100%; max-width: 640px; border-radius: 10px; margin-bottom: 20px; }
+        
+        /* 퀴즈 섹션 */
+        #quiz-container { background-color: #1f2937; padding: 16px; border-radius: 12px; border: 1px solid #4b5563; margin-top: 30px; margin-bottom: 16px; backdrop-filter: blur(8px);} 
+        #question { font-size: 1.5em; margin-bottom: 20px; }
+        .options { display: grid; grid-template-columns: 1fr; }
+        .options button { margin-bottom: 15px; padding: 15px; font-size: 1.1em; cursor: pointer; border: 2px solid #4b5563;; background-color: #1f4068; color: white; border-radius: 8px; transition: background-color 0.3s; }
+        .options button:hover { background-color: #e43f5a; }
+        
+        /* 스탬프 카드 섹션 */
+        #stamp-card-container { margin-top: 30px; }
+        .stamp-card { 
+            display: grid; 
+            grid-template-columns: repeat(3, 1fr); 
+            gap: 12px; 
+            background-color: #374151; 
+            padding: 15px; 
+            border-radius: 10px; 
+            margin-bottom: 24px; 
+            border: 1px solid #4b5563;}
+        .stamp-slot { 
+            transition: all 0.15s ease-in-out; 
+            background-color: #374151; 
+            border-color: #6b7280; 
+            border-radius: 50%;  
+            align-items: center; 
+            justify-content: center; 
+            display: flex; 
+            position: relative;  
+            margin-bottom: 2em;}
+        .stamp-slot img { max-width: 80%; max-height: 80%; opacity: 0.3; }
+        .stamp-slot.stamped img { opacity: 1; transform: scale(1.1); transition: transform 0.5s; }
+        .planet-name { font-size: 1.2em; margin-top: 6em; position: absolute; }
+        
+        /* 결과 및 네비게이션 */
+        #result-container { margin-top: 20px; }
+        .nav-buttons {display: flex; }
+        .nav-buttons button { 
+            flex: 1; 
+            align-items: center; 
+            background-color: transparent; 
+            padding: 12px 12px; 
+            font-size: 1.2em; 
+            font-weight: 500; 
+            font-family: inherit;
+            cursor: pointer; 
+            border-radius: 8px; 
+            border: 1px solid #6b7280;
+            color: #d1d5db;
+            margin: 0 8px; }
+        .btn-map { background-color: #0f3460; }
+        .btn-photo { background-color: #1f4068; }
+
+        #ar-view, #video-quiz-view { width: 100%; height: 100%; }
+
+    dialog {
+        top: calc(var(--vh, 1vh) * 15);
+        left: 11vw;
+        width: 80%;
+        padding: 20px 10px;
+        border-radius: 1rem;
+        min-width: 11rem;
+        position: fixed; /* Essential for custom positioning */
+    }
+
+    .AlertInfo {
+        color: #facc15;
+        font-size: 2rem;
+        margin-top: 0;
+        margin-top: 10px;
+    }
+    #info_top {
+        display: flex; 
+        align-items: center;
+        position: fixed; 
+        top: calc(var(--vh, 1vh) * 6);
+        text-align: center; 
+        width: 100%; 
+        color: white; 
+        z-index:10; 
+        background: rgba(0,0,0,0.5); 
+        padding: 20px;
+        gap: 20px;
+     }
+
+    #info {
+        display: flex; 
+        align-items: center;
+        position: fixed; 
+        top: calc(var(--vh, 1vh) * 85);
+        text-align: center; 
+        width: 100%; 
+        color: white; 
+        z-index:10; 
+        background: rgba(0,0,0,0.5); 
+        padding: 20px;
+        gap: 20px;
+     }
+
+     .image-item {
+      margin-left: 1em;
+      margin-right: 1em; /* 이미지와 텍스트 사이 간격 */
+      width: 2em; 
+      height: 2em;
+    }
+
+    .text-item {
+      width: 80vw; /* 텍스트 너비 조정 */
+    }
+
+  .center-wrapper {
+    display: flex;
+    justify-content: center;   /* 수평 가운데 */
+    align-items: center;       /* 수직 가운데 */
+    height: 15rem;             /* 원하는 높이 설정 */
+  }
+
+  .square-image {
+    overflow-x: auto;
+    width: 30rem;
+    border-radius: 15px;         /* 사각형으로 만들기 */
+    overflow: hidden;           /* 이미지가 영역을 넘지 않도록 */
+    border: 2px solid #ccc;     /* 테두리 (선택사항) */
+  }
+
+  .square-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;          /* 이미지 비율 유지하며 채우기 */
+  } 
+
+  .PrizeModal {
+        background-color: #141c2b;
+        color: #5da0f3;
+        top: calc(var(--vh, 1vh) * 28);
+        left: 5.5vw;
+        width: 90vw;
+        padding: 20px 10px;
+        border-radius: 1rem;
+        border: 2px solid #00d3f3;
+        min-width: 11rem;
+        position: fixed; /* Essential for custom positioning */
+  }
+  .prizelocInfo {
+    color: #facc15;
+    font-size: 1.3rem;
+    margin: 10px 25px;
+  }
+  .PrizeCloseBtn {
+    margin: 15px;
+    padding: 10px; 
+    border-radius: 8px;
+    width: 78vw; 
+    font-size: 1rem;
+    background-color: #0088c9;
+    color: #f8fbfe;
+    border: 3px solid #00d3f3;
+  }
+    </style>
+</head>
+<body style="margin: 0; overflow: hidden;">
+
+<div class="container">
+    <h1 id="planet-title" style="font-size: 2em; margin-top: 16px; margin-bottom: 16px;">행성 탐사</h1>
+    <!--p id="anno" style="font-size: 18px; color: #e5e7eb; margin-top: 20px">퀴즈를 풀고 스탬프를 모아보세요</p-->
+    
+    <!--div id="video-quiz-view" class="hidden">
+    </div-->
+
+
+    <!--div id="video-container" class="hidden">
+        <video id="video-player" playsinline autoplay muted oncontextmenu="return false;"></video>
+        <p>행성 소개 영상을 시청 후 퀴즈에 참여하세요!</p>
+    </div-->
+
+    <div id="quiz-container" class="hidden">
+        <div id="Planet-Info"></div>
+        <h2 id="question"></h2>
+        <div id="options" class="options"></div>
+    </div>
+
+    <div id="result-container" class="hidden">
+        <p id="result-message" style="font-size: 1.3em; margin-top: 1.2em; margin-bottom: 1.2em; color: #facc15;"></p>
+        <div id="explain" style="background-color: #1e40af; color: #bfdbfe; border: 1px solid #4b5563; border-radius: 8px; padding: 12px; margin-bottom: 1.5em; font-size: 16px;" class="hidden"></div>
+    </div>
+    
+    <div id="stamp-card-container" class="hidden">
+        <h2 style="margin-bottom: 0.5em;">🃏 스탬프 컬렉션</h2>
+        <div id="countinfo" style="color: #e5e7eb; font-size: 1.3em; margin-bottom: 1em; ">수집한 행성 카드를 확인해보세요</div>
+        <div id="stamp-card" class="stamp-card"></div>
+        <div class="nav-buttons">
+            <button id="map-btn" class="btn-map">🗺️ 행성 지도</button>
+            <button id="photo-btn" class="btn-photo">📸 AR 포토존</button>
+        </div>
+    </div>    
+
+</div>
+    <div id="ar-view">
+        <a-scene
+            id="scene"
+            vr-mode-ui="enabled: false"
+            device-orientation-permission-ui="enabled: false"
+            arjs="sourceType: webcam; videoTexture: true; debugUIEnabled: false;"
+            renderer="logarithmicDepthBuffer: true"
+            emitevents="true" 
+            cursor="rayOrigin: mouse"
+            raycaster="objects: #joayong-model"
+        >
+
+            <a-entity scale="0 0 0" animation="property: scale; to: 1 1 1; loop: false; dur: 3000">
+              <a-entity
+                id="planet-model"
+                rotation="10 -15 0"
+                animation-mixer
+                selective-click>
+              </a-entity>
+            </a-entity>
+
+            <a-entity rotation="0 0 0" animation="property: rotation; to: 0 360 0; loop: true; dur: 10000">
+              <a-entity
+                id="joayong-model"
+                rotation="20 -30 0"
+                animation-mixer
+                selective-click>
+              </a-entity>
+            </a-entity>
+            
+            <!--a-entity movement-controls="fly: true"-->
+            <a-entity cursor="rayOrigin: mouse" raycaster="objects: #joayong-model" position="0 1.6 0" camera look-controls="touchEnabled: false; mouseEnabled: false" wasd-controls></a-entity>
+            <!--a-light type="ambient" intensity="2"></a-light-->
+        </a-scene>
+
+        <div id="info_top">
+            <img src="./images/alert.gif" alert="알림 이미지" class="image-item">
+            <p class="text-item">조아용이 행성 주변을 돌며 구조를 기다리고 있습니다.</p>
+            <img src="./images/alert.gif" alert="알림 이미지" class="image-item">
+        </div>
+
+        <div id="info">
+            <img src="./images/alert.gif" alert="알림 이미지" class="image-item">
+            <p class="text-item">휴대폰을 천천히 360도 돌려서 조아용을 찾아 터치하세요. </p>
+            <img src="./images/alert.gif" alert="알림 이미지" class="image-item">
+        </div>
+    </div>
+
+    <div id="quiz-modal" class="modal hidden">
+        <div class="modal-content">
+            <p>퀴즈 화면으로 이동합니다...</p>
+        </div>
+    </div>
+
+    <dialog id="myAlertDialog" class="hidden">
+       <h2  class="AlertInfo">축하합니다!</h2>
+       <p>모든 행성 스탬프를 모았습니다. <br>부스로 이동하여 QR코드 스캔 후 경품을 수령하세요!</p>
+       <button onclick="myAlertDialog.close()" style="width: 10vw; height: 2rem;">확인</button>
+    </dialog>
+
+    <div id="prizemodal" class="PrizeModal hidden">
+       <h2  class="prizelocInfo">📱 기념품 수령 안내</h2>
+       <div class="center-wrapper"> 
+          <div class="square-image">
+            <img src="./images/prizeloc.png" alt="경품수령 위치 이미지">
+          </div>
+       </div> 
+       <button onclick="closeModal()" class="PrizeCloseBtn">확인</button>
+
+    </div>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const sceneEl = document.querySelector('a-scene');
+    const arView = document.getElementById('ar-view');
+//    const videoQuizView = document.getElementById('video-quiz-view');
+    const planetModel = document.getElementById('planet-model');
+    const joayongModel = document.getElementById('joayong-model');
+    const InfoView = document.getElementById('info');
+    const InfoViewTop = document.getElementById('info_top');
+    const quizModal = document.getElementById('quiz-modal');
+    const PrizeLoc = document.getElementById('prizemodal');
+
+    const joayongPos = {
+        earth:     { name: '지구', lat: 37.489121, lng: 126.955418, model: './models/joayong-rocket-fire.glb', scale: '0.7 0.7 0.7', position: '-1.5 1 -4' }, 
+        mars: { name: '화성', lat: 37.4895, lng: 126.9556, model: './models/joayong-cute-ufo.glb', scale: '0.5 0.5 0.5', position: '1.5 1.2 -4' },
+        jupiter:   { name: '목성', lat: 37.4893,   lng: 126.9561, model: './models/joayong-train-fire.glb', scale: '0.7 0.7 0.7', position: '-0.5 1.5 -4' },
+        saturn:  { name: '토성', lat: 37.488928, lng: 126.956250, model: './models/joayong-spaceshuttle.glb', scale: '0.5 0.5 0.5', position: '-0.8 1.7 -4' },
+        uranus:   { name: '천왕성', lat: 37.4891, lng: 126.9569, model: './models/joayong-guitar-magic-fire.glb', scale: '0.7 0.7 0.7', position: '-0.5 1 -4'},
+        neptune:   { name: '해왕성', lat: 37.489086, lng: 126.956518, model: './models/joayong-hoverboard-magic-fire.glb', scale: '0.7 0.7 0.7', position: '-0.5 1 -4' },           
+    };    
+
+    const planetPos = {
+        earth:     { name: '지구', lat: 37.489121, lng: 126.955418, model: './models/solar-earth.glb', scale: '3 3 3', position: '1 2 -18' }, 
+        mars: { name: '화성', lat: 37.4895, lng: 126.9556, model: './models/solar-mars.glb', scale: '3 3 3', position: '1 2 -18'},
+        jupiter:   { name: '목성', lat: 37.4893,   lng: 126.9561, model: './models/solar-jupiter.glb', scale: '1.5 1.5 1.5', position: '1 2 -18' },
+        saturn:  { name: '토성', lat: 37.488928, lng: 126.956250, model: './models/solar-saturn.glb', scale: '1.5 1.5 1.5', position: '1 2 -18' },
+        uranus:   { name: '천왕성', lat: 37.4891, lng: 126.9569, model: './models/solar-uranus.glb', scale: '2 2 2', position: '1 2 -18' },
+        neptune:   { name: '해왕성', lat: 37.489086, lng: 126.956518, model: './models/solar-neptune.glb', scale: '2 2 2', position: '1 2 -18' },        
+    };    
+    // test용
+        const planetData = {
+        earth: { name: '🌍 지구', video: './mp4/sun.mp4', stamp: './images/earth.png', quizPool: [
+            { q: "지구에서 물이 차지하는 비율은?", o: ["51%", "61%", "71%", "81%"], a: 3, e: "지구 표면의 약 71%가 바다로 이루어져 있습니다." },
+            { q: "지구의 영어 이름은 무엇일까요?", o: ["Mars", "Venus", "Mercury", "Earth"], a: 4, e: "지구의 영어 이름은 Earth 입니다." },
+            // ... (3 more questions)
+        ]},
+        mars: { name: '🔴 화성', video: './mp4/mercury.mp4', stamp: './images/mars.png', quizPool: [
+            { q: "화성의 영어 이름은 무엇일까요?", o: ["Mars", "Venus", "Mercury", "Jupiter"], a: 1, e: "화성의 영어 이름은 Mars 입니다." },
+            { q: "화성이 붉은색으로 보이는 이유는?", o: ["용암 때문에", "대기 때문에", "철 산화물 때문에", "얼음 때문에"], a: 2, e: "산화철 성분이 대기 중에 퍼져 있어 멀리서 행성 전체가 붉은색으로 보입니다. " },
+            // ... (4 more questions)
+        ]},
+        jupiter: { name: '🪐 목성', video: './mp4/venus.mp4', stamp: './images/jupiter.png', quizPool: [
+            { q: "목성의 영어 이름은 무엇일까요?", o: ["Venus", "Saturn", "Mercury", "Jupiter"], a: 4, e: "목성의 영어 이름은 Jupiter 입니다." }, 
+            { q: "목성의 가장 큰 특징은?", o: ["가장 뜨거움", "가장 큼", "가장 빠름", "가장 밝음"], a: 2, e: "목성은 태양계에서 가장 큰 행성입니다." },  
+            // ... (3 more questions)
+        ]},
+        saturn: { name: '💫 토성', video: '/mp4/saturn.mp4', stamp: './images/saturn.png', quizPool: [
+            { q: "토성의 영어 이름은 무엇일까요?", o: ["Mars", "Saturn", "Mercury", "Jupiter"], a: 2, e: "토성의 영어 이름은 Saturn 입니다." }, 
+            { q: "토성의 가장 유명한 특징은?", o: ["거대한 폭풍", "아름다운 고리", "가장 많은 달", "가장 빠른 자전"], a: 2, e: "토성은 아름다운 얼음과 암석 고리로 유명합니다."  },           
+            // ... (3 more questions)
+        ]}, 
+        uranus: { name: '💎 천왕성', video: '/mp4/mars.mp4', stamp: './images/uranus.png', quizPool: [
+            { q: "천왕성의 영어 이름은 무엇일까요?", o: ["Mars", "Venus", "Uranus", "Jupiter"], a: 3, e: "천왕성의 영어 이름은 Uranus 입니다."  },
+            { q: "천왕성만의 독특한 특징은?", o: ["가장 차가움", "옆으로 누워서 돔", "가장 작음", "가장 빠름"], a: 2, e: "천왕성은 98도 기울어져 있어 옆으로 누워서 도는 것처럼 보입니다." },
+            // ... (3 more questions)
+        ]},    
+        neptune: { name: '🌊 해왕성', video: '/mp4/jupiter.mp4', stamp: './images/neptune.png', quizPool: [
+            { q: "해왕성의 영어 이름은 무엇일까요?", o: ["Mars", "Neptune", "Mercury", "Jupiter"], a: 2, e: "해왕성의 영어 이름은 Neptune 입니다."  },
+            { q: "해왕성에 대한 설명으로 맞는 것은?", o: ["태양에 가장 가까움", "가장 강한 바람", "가장 밝음", "고리가 없음"], a: 2, e: "해왕성은 태양계에서 가장 강한 바람이 부는 행성입니다."  },
+            // ... (3 more questions)
+        ]},    
+    };
+
+    // --- 2. 요소 가져오기 ---
+    const planetTitle = document.getElementById('planet-title');
+//    const videoContainer = document.getElementById('video-container');
+//    const videoPlayer = document.getElementById('video-player');
+    const quizContainer = document.getElementById('quiz-container');
+    const questionEl = document.getElementById('question');
+    const optionsEl = document.getElementById('options');
+    const stampCardEl = document.getElementById('stamp-card');
+    const resultContainer = document.getElementById('result-container');
+    const resultMessage = document.getElementById('result-message');
+    const mapBtn = document.getElementById('map-btn');
+    const photoBtn = document.getElementById('photo-btn');
+    const PlanetCount = Object.keys(planetData).length;
+    const StampCard = document.getElementById('stamp-card-container');
+    
+    let currentPlanetId;
+    let currentQuiz;
+    let currentPlanet;
+
+    // --- 3. 페이지 초기화 ---
+    function initPage() {
+        const urlParams = new URLSearchParams(window.location.search);
+        currentPlanetId = urlParams.get('planet');   
+        const currentPos = planetPos[currentPlanetId];
+        const currentJoa = joayongPos[currentPlanetId];
+     
+        currentPlanet = planetData[currentPlanetId];        
+
+        if (!currentPlanet) {
+            alert("잘못된 접근입니다.");
+            window.location.href = './joayong-map.html';
+            return;
+        }
+
+        // 스탬프 카드 렌더링
+
+        if (currentPos) {
+        //    planetModel.setAttribute('gps-entity-place', `latitude: ${currentPos.lat}; longitude: ${currentPos.lng};`);
+            planetModel.setAttribute('gltf-model', `url(${currentPos.model})`);
+            planetModel.setAttribute('scale', currentPos.scale);   
+            planetModel.setAttribute('position', currentPos.position);     
+            joayongModel.setAttribute('gltf-model', `url(${currentJoa.model})`);
+            joayongModel.setAttribute('scale', currentJoa.scale);   
+            joayongModel.setAttribute('position', currentJoa.position);      
+        } else {
+            alert("행성 정보를 찾을 수 없습니다. 메인 화면으로 돌아갑니다.");
+            window.location.href = 'joayong-map.html';
+        }
+
+    sceneEl.addEventListener('loaded', () => {
+//        // 'mousedown' (PC 클릭)과 'touchstart' (모바일 터치) 이벤트를 감지합니다.
+        // { passive: false } 옵션을 여기서 직접 설정합니다.
+        sceneEl.canvas.addEventListener('mousedown', onSceneClick, { passive: false });
+        sceneEl.canvas.addEventListener('touchstart', onSceneClick, { passive: false });
+    });
+
+        // ✨ 3. 클릭/터치 시 실행될 새로운 함수
+    function onSceneClick(event) {
+
+        event.stopPropagation();
+        event.preventDefault();
+        
+        const raycaster = new THREE.Raycaster();
+        const mouse = new THREE.Vector2();
+
+        // 클릭한 화면 좌표를 3D 공간 좌표로 변환합니다.
+        if (event.type === 'touchstart') {
+            mouse.x = (event.touches[0].clientX / window.innerWidth) * 2 - 1;
+            mouse.y = - (event.touches[0].clientY / window.innerHeight) * 2 + 1;
+        } else {
+            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
+        }
+
+        // 카메라 위치에서 클릭한 방향으로 광선을 쏩니다.
+        raycaster.setFromCamera(mouse, sceneEl.camera);
+        
+        // 광선이 3D 모델(planetModelEntity)과 충돌했는지 확인합니다.
+        const intersects = raycaster.intersectObject(joayongModel.object3D, true);
+
+        if (intersects.length > 0) {
+            // ✨ 2. 충돌한 첫 번째 객체가 'planet-model'의 자식인지 확인합니다.
+           //     console.log(`${currentPlanet.name} 획득!`);
+           quizModal.classList.remove('hidden');
+
+           joayongModel.setAttribute('animation', {
+                property: 'position',
+                to: '0 0.5 -2', // 카메라 앞으로 이동
+                dur: 1500,      // 1.5초 동안
+                easing: 'easeInOutQuad'
+            });
+            
+            // 기본 브라우저 동작(스크롤 등)을 막습니다.
+   //             event.preventDefault();
+            setTimeout(() => {
+                sceneEl.classList.add('hidden');
+                InfoView.style.display='none';
+                InfoViewTop.style.display='none';
+//          videoQuizView.classList.remove('hidden');
+                startVideoAndQuiz(currentPlanetId);
+                quizModal.classList.add('hidden');
+                joayongModel.removeAttribute('animation');
+
+            }, 2000);
+        }
+
+    }
+
+    AFRAME.registerComponent('selective-click', {
+    init: function () {
+    this.el.addEventListener('click', (evt) => {
+      // 클릭된 요소의 id가 'joayong-model'일 때만 반응
+      if (this.el.id === 'joayong-model') {
+        console.log('joayong-model이 클릭되었습니다!');
+        // 원하는 동작을 여기에 추가
+      } else {
+        // 아무 반응 없음
+        evt.stopPropagation();
+        evt.preventDefault();
+      }
+    });
+  }
+  });
+}
+    // --- 4. 퀴즈 표시 ---
+    function showQuiz() {
+  //      videoContainer.classList.add('hidden');
+        quizContainer.classList.remove('hidden');   
+  //      const currentPlanet = planetData[currentPlanetId];
+        // 5문제 중 랜덤으로 하나 선택
+        currentQuiz = currentPlanet.quizPool[Math.floor(Math.random() * currentPlanet.quizPool.length)];    
+        questionEl.textContent = currentQuiz.q;
+        optionsEl.innerHTML = '';
+        
+        currentQuiz.o.forEach((optionText, index) => {
+            const button = document.createElement('button');
+            button.textContent = optionText;
+            button.onclick = () => checkAnswer(index + 1);
+            optionsEl.appendChild(button);
+        });
+    }
+    // --- 5. 정답 확인 및 스탬프 획득 ---
+    async function checkAnswer(selectedIndex) {
+        quizContainer.classList.add('hidden');
+        Explain = document.getElementById('explain');
+        Explain.innerHTML = '';
+
+        if (selectedIndex === currentQuiz.a) {
+            const collectedStamps = JSON.parse(localStorage.getItem('stamps')) || {};
+            collectedStamps[currentPlanetId] = true;
+            localStorage.setItem('stamps', JSON.stringify(collectedStamps));
+            
+            try {
+                await fetch('/api/collect-stamp', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId: localStorage.getItem('userId'), planetId: currentPlanetId })
+                });
+            } catch (error) {
+                console.error("서버에 스탬프를 기록하는 데 실패했습니다:", error);
+            }
+
+            resultMessage.textContent = "정답입니다! 🏆 스탬프를 획득하셨습니다!";
+            Explain.innerHTML = currentQuiz.e;
+            Explain.classList.remove('hidden');
+            // 2. 스탬프 카드 UI를 즉시 갱신합니다.
+            renderStampCard();
+            StampCard.classList.remove('hidden');
+
+            // 10개 모두 모았는지 확인
+            const PlaneLength = Object.keys(planetData).length;
+//            const totalStamps = Object.keys(collectedStamps).length;
+            const validStamps = Object.keys(collectedStamps).filter(key => planetData.hasOwnProperty(key));
+            const totalStamps = validStamps.length;
+
+            console.log(`전체 행성 수: ${PlaneLength}, 획득한 유효 스탬프 수: ${totalStamps}`);
+
+            if (totalStamps >= PlaneLength) {
+          //      alert("축하합니다! 모든 행성 스탬프를 모았습니다. 경품 룰렛 페이지로 이동합니다!");
+                const Dialog = document.querySelector('dialog');
+                Dialog.classList.remove('hidden');
+                Dialog.showModal();
+                mapBtn.textContent = "🎁 QR코드 찍기";
+                mapBtn.onclick = () => { window.location.href = 'scanner.html'; };
+                photoBtn.textContent = "경품 수령처 위치"
+                photoBtn.onclick = () => { PrizeLoc.classList.remove('hidden'); };
+     //           photoBtn.classList.add('hidden');
+     //           resultContainer.classList.remove('hidden'); 
+                return;
+            }
+        } else {
+            resultMessage.textContent = "아쉬워요, 정답이 아닙니다. 다시 도전해보세요!";
+            quizContainer.classList.add('hidden');
+            resultContainer.classList.remove('hidden');
+            // 오답 시에는 2초 후 다시 퀴즈 화면으로
+            setTimeout(() => {
+                resultContainer.classList.add('hidden');
+                showQuiz();
+                return; // 아래 resultContainer를 다시 보이게 하는 코드를 실행하지 않음
+            }, 2000);
+        }
+        resultContainer.classList.remove('hidden');
+    }
+    
+    // --- 6. 스탬프 카드 렌더링 ---
+    function renderStampCard() {
+    //    const Anno = document.getElementById('anno');
+    //    Anno.classList.add('hidden');
+        var Count = 0;
+        stampCardEl.innerHTML = '';
+        const collectedStamps = JSON.parse(localStorage.getItem('stamps')) || {};
+
+        Object.keys(planetData).forEach(planetId => {
+            const planet = planetData[planetId];
+            const slot = document.createElement('div');
+            slot.className = 'stamp-slot';
+            
+            const img = document.createElement('img');
+   //         img.src = planet.stamp;
+            img.src = "./images/lock.png";
+            img.style.borderColor = "#4ade80";
+            img.style.border = "2px solid #4b5563";
+
+            const name = document.createElement('div');
+            name.className = 'planet-name';
+            name.textContent = planet.name.split(' ')[1]; // 이모지 제외하고 이름만 표시
+
+            if (collectedStamps[planetId]) {
+                img.src = planet.stamp;
+                slot.classList.add('stamped');
+                Count++;
+            }            
+            slot.appendChild(img);
+            slot.appendChild(name);
+            stampCardEl.appendChild(slot);
+        });
+        const CountInfo = document.getElementById('countinfo');
+        CountInfo.textContent = "총 " + Count + " 개의 스탬프를 획득하셨습니다!";
+    }
+
+    // --- 7. 네비게이션 버튼 ---
+    mapBtn.onclick = () => { window.location.href = './joayong-map.html'; };
+    photoBtn.onclick = () => { window.location.href = `photozone.html?planet=${currentPlanetId}`; };
+
+       // --- 3. 이벤트 핸들러를 연결합니다. ---
+    
+    function startVideoAndQuiz(planetId) {
+//        console.log(`${planetId}의 비디오와 퀴즈를 시작합니다.`);
+        planetTitle.textContent = `${currentPlanet.name} 퀴즈`;
+        renderStampCard();
+
+        // 이미 획득한 스탬프인지 확인
+        const collectedStamps = JSON.parse(localStorage.getItem('stamps')) || {};
+        const userId = localStorage.getItem('userId');  
+
+   //     if (Object.keys(collectedStamps).length >= PlanetCount) {
+        // ✨ 1. 가장 먼저 전체 스탬프 개수부터 확인합니다.
+    
+        fetch(`/api/check-eligibility/${userId}`)
+            .then(res => res.json())
+            .then(status => {
+                console.log("서버 응답 (경품 수령 여부):", status.hasRedeemed);
+                console.log("현재 로컬 스탬프 개수:", Object.keys(collectedStamps).length);
+
+            if (status.hasRedeemed) {
+                // 1. 최종 경품까지 받은 유저
+    //            videoContainer.classList.add('hidden');
+                quizContainer.classList.add('hidden');
+                resultMessage.textContent = "모든 이벤트에 참여해주셔서 감사합니다! 경품을 이미 수령하셨습니다.";
+                mapBtn.textContent = "🗺️ 메인 지도로";
+                mapBtn.onclick = () => { window.location.href = 'joayong-map.html'; };
+                photoBtn.classList.add('hidden');
+                resultContainer.classList.remove('hidden');
+                return; // 여기서 로직 종료
+            } 
+            
+            else if (Object.keys(collectedStamps).length >= PlanetCount) {
+                // 2. 스탬프는 다 모았지만 아직 QR을 안 찍은 유저
+    //            videoContainer.classList.add('hidden');
+                quizContainer.classList.add('hidden');                
+                resultMessage.innerHTML = "축하합니다! <br>모든 스탬프를 모았습니다. <br>부스에서 QR코드를 찍어 경품을 받으세요!";
+                mapBtn.textContent = "🎁 QR코드 찍기";
+                mapBtn.onclick = () => { window.location.href = './scanner.html'; };
+                photoBtn.textContent = "경품 수령처 위치"
+                photoBtn.onclick = () => { PrizeLoc.classList.remove('hidden'); };
+
+    //            photoBtn.classList.add('hidden');
+                resultContainer.classList.remove('hidden'); 
+                renderStampCard();    //9월 9일 추가
+                StampCard.classList.remove('hidden');  //9월 9일 추가
+                return; // 여기서 로직 종료
+            }             
+            
+            else if (collectedStamps[currentPlanetId]) {
+                // 3. 현재 스탬프를 이미 획득한 유저
+    //            videoContainer.classList.add('hidden');
+                quizContainer.classList.add('hidden');
+                resultMessage.textContent = "이미 이 행성의 스탬프를 획득했습니다!";
+                resultContainer.classList.remove('hidden'); 
+                renderStampCard();   // 9월 9일 추가
+                StampCard.classList.remove('hidden'); // 9월 9일 추가
+                return; // 여기서 로직 종료
+            } 
+            
+            else {
+            // 4. 새로운 스탬프에 도전하는 유저
+    //            videoContainer.classList.remove('hidden');
+                quizContainer.classList.remove('hidden');
+                resultContainer.classList.add('hidden');
+    //            videoPlayer.src = currentPlanet.video;
+    //            videoPlayer.onended = showQuiz;
+                PlanetInfo = document.getElementById('Planet-Info');
+        
+                const img = new Image();
+                img.src = currentPlanet.stamp;
+                img.style.objectFit = 'cover';
+                img.style.height= '60px';
+                img.style.width= '60px';
+
+                PlanetInfo.appendChild(img);
+
+                const span = document.createElement('span');
+                span.innerText = currentPlanet.name +  " 발견";
+                span.setAttribute('style', 'display: inline-block; padding: 4px 12px; font-size: 12px; font-weight: 500; border-radius: 20px; margin-bottom: 16px; background-color: #2563eb; color: white; text-align: center;');
+                PlanetInfo.appendChild(span);
+                showQuiz();
+            }
+            
+        })
+    
+        .catch(err => {
+            console.error("자격 확인 API 호출 오류:", err);
+            alert("사용자 정보를 확인하는 중 오류가 발생했습니다.");
+        });
+    }
+
+    // --- 페이지 로드 시 시작 ---
+    initPage();
+});
+
+function closeModal() {
+  document.getElementById("prizemodal").style.display = "none";
+}
+</script>
+
+</body>
+</html>
