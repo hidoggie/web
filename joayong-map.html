@@ -35,16 +35,18 @@
 
         }
         #map { 
-            height: calc(var(--vh, 1vh) * 70); 
+            height: calc(var(--vh, 1vh) * 65); 
             margin: 0; 
-            padding: 0; 
             font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, 'Helvetica Neue', 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif;
             background-color: #111827;
             color: #ffffff;
             font-size: 14px;
             line-height: 1.5;
             overflow-x: hidden;
-
+            border: 1px solid #4b5563;
+            overflow: hidden;
+            padding: 16px; 
+            border-radius: 12px;
         }
         #modal, #status-modal { display: none; position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: 9999; width: 80vw; height: calc(var(--vh, 1vh) * 40);; max-width: 220px;}
         .modal-content { width: 100%; position: absolute; background-color: #1f2937; margin: auto; padding: 15px; border-radius: 10px; text-align: center; grid-template-columns: 1fr; }
@@ -64,21 +66,12 @@
           background-color: #1f2937;
           border: 1px solid #4b5563;
           width: 100%;
-          height: calc(var(--vh, 1vh) * 70);
+          height: calc(var(--vh, 1vh) * 65);
           border-radius: 12px;
-          margin-bottom: 8px;
+          margin-bottom: 2em;
           padding: 8px;
         }
 
-       #map { 
-        border: 1px solid #4b5563;
-        overflow: hidden;
-        margin: 0; 
-        padding: 16px; 
-        border-radius: 12px;
-        font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, 'Helvetica Neue', 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif;
-        }
-     
         .container {
             height: calc(var(--vh, 1vh) * 100);
             position: relative;
@@ -130,7 +123,7 @@
       width: 50px;
       height: 50px;
       border-radius: 50%;
-      border: 3px solid red;
+      border: 3px solid #f2d235;
       overflow: hidden;
       box-sizing: border-box;
       transition: transform 0.3s ease;
@@ -177,6 +170,19 @@
       margin-bottom: 5px;
     }
 
+    .modal-sub-title {
+      color: #1f2937;
+      font-size: 1.2em;
+      text-align: center;
+      margin-bottom: 5px;
+    }
+
+    .modal-sub-contens {
+      color: #1f2937;
+      font-size: 1em;
+      text-align: center;
+      margin-bottom: 5px;       
+    }
     /* 이미지 그리드 */
     .circle-grid {
       display: grid;
@@ -218,6 +224,11 @@
     <div id="MapCover">
         <div id="map"></div>
     </div>
+
+    <div class="modal-buttons">
+        <button class="btn-stamp" onclick="window.location.href = './scanner.html'";>🚀 QR코드 찍기</button>
+    </div>
+ 
     
     <div id="modal">
         <div class="modal-content">
@@ -243,7 +254,8 @@
 
     <div class="photozone-modal">
         <div class="modal-box">
-          <div class="modal-title">AR 포토존 가기</div>
+          <div class="modal-sub-title">📷 AR 포토존 체험하기</div>
+          <div class="modal-sub-contens">행성 버튼을 눌러 포토존을 체험하세요.</div>
           <div class="circle-grid">
             <a href="./photozone.html?planet=earth" class="circle-button"><img src="./images/earth.png" alt="지구 이미지"></a>
             <a href="./photozone.html?planet=mars" class="circle-button"><img src="./images/mars.png" alt="화성 이미지"></a>
@@ -276,11 +288,11 @@
         let hasShownOutOfBoundsAlert = false;
 
         const mapElement = document.getElementById('map');
-        const eventCenterPoint = new naver.maps.LatLng(37.489122, 126.956116); // 이벤트 중심 좌표
-        const eventCenterPoint1 = new naver.maps.LatLng(37.249746, 127.165157); // 이벤트 중심 좌표
+        const eventCenterPoint1 = new naver.maps.LatLng(37.489122, 126.956116); // 이벤트 중심 좌표
+        const eventCenterPoint = new naver.maps.LatLng(37.249746, 127.165157); // 이벤트 중심 좌표
         const eventRadius = 500; // 이벤트 참여 가능 반경 (500미터)
 
-            const stampLocations1 = [
+            const stampLocations = [
                 { title: '🌍 지구', lat: 37.249180, lng: 127.165636, id: 'earth', marker: './images/earth.png' },
                 { title: '🔴 화성', lat: 37.249077, lng: 127.164944, id: 'mars', marker: './images/mars.png' },
                 { title: '🪐 목성', lat: 37.249667, lng: 127.166059, id: 'jupiter', marker: './images/jupiter.png' },
@@ -289,7 +301,7 @@
                 { title: '🌊 해왕성', lat: 37.250235, lng: 127.164643, id: 'neptune', marker: './images/neptune.png' }, 
             ];
 
-            const stampLocations = [
+            const stampLocations1 = [
                 { title: '🌍 지구', lat: 37.489121, lng: 126.955418, id: 'earth', marker: './images/earth.png' },
                 { title: '🔴 화성', lat: 37.4895,   lng: 126.9556, id: 'mars', marker: './images/mars.png' },
                 { title: '🪐 목성', lat: 37.4893,   lng: 126.9561, id: 'jupiter', marker: './images/jupiter.png' },
@@ -410,7 +422,8 @@
                 });
                  
                 if (collectedStamps[loc.id]) {
-                    markerEl.style.borderColor = "#f2d235"
+                    markerEl.style.borderColor = "red"
+                    markerEl.style.filter = "brightness(50%)";
                 }
                 markerElements.push(markerEl);
 
@@ -546,7 +559,7 @@
 
             if(activeModalId) return; // 모달이 이미 떠있으면 추가 확인 안함
 
-            const proximityLimit = 20; // 20미터
+            const proximityLimit = 30; // 20미터에서 30m로 변경
             
             for (const loc of stampLocations) {
                 const distance = getDistanceInMeters(userPosition.lat(), userPosition.lng(), loc.lat, loc.lng);
