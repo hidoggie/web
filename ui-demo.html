@@ -1,0 +1,276 @@
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <title>AR 거북선</title>
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, user-scalable=no"
+    />
+
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <script src="./js/aframe120.js"></script>
+    
+    <script src="./js/aframe-ar-nft-3.js"></script>
+    <script src="./js/gridhelper.js"></script>
+    <script src="./js/aframe-extra-611.js"></script>
+    
+    <script src="./js/aframe-chromakey.js"></script>
+    <script src="./js/grid-selector.js"></script>
+    <script src="./js/aframe-gif-shader.js"></script>
+    <script src="./js/aframe-troika-text.js"></script>
+    <script src="./js/model-opacity.js"></script>
+    <script src="./js/aframe-light-control.js"></script>
+
+    <link rel="stylesheet" href="./css/ocean-safe.css" />
+    <ink rel="stylesheet" href="ocean-geobuk.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
+      integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    
+    <style>
+      body {
+        height: 100vh;
+        height: -webkit-fill-available;
+        height: fill-available;
+      }
+    </style>
+
+    <script src="https://cdn.jsdelivr.net/npm/three@0.150.1/examples/js/loaders/DRACOLoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.150.1/examples/js/loaders/GLTFLoader.js"></script>
+
+ 
+  </head>
+  
+  <body style="margin: 0px; overflow: hidden">
+
+    <input
+      id="start_btn"
+      type="image"
+      alt="시작 버튼"
+      src="./image/video-play-btn.png"
+      style="
+        position: absolute;
+        z-index: 999999;
+        display: none;
+        top: 15%;
+        left: 35%;
+        justify-content: center;
+        align-items: center;
+        height: 30vw;
+        width: 30vw;
+      "
+    />
+    <button
+           class="HomeButton"
+           id="home-btn"
+           aria-label="홈 버튼"
+           onclick="window.open('https://guide1.ivyro.net/oceanbreeze','_self');"
+    ></button>
+      
+    <button
+           class="VidStopBtn"
+           id="vstopbtn"
+           aria-label="비디오 중지 버튼"
+           onclick="vidstop();"
+    ></button>
+    <button
+           class="VidStartBtn"
+           id="vstartbtn"
+           aria-label="비디오 시작 버튼"
+           onclick="vidstart();"
+    ></button>
+
+        <!--button
+           aria-label="도슨트 맵 버튼"
+           class="DocentMapButton"
+           id="docentmap-btn"
+           onclick="window.open('https://guide1.ivyro.net/oceanbreeze/AR/docent-map.html','_self');"
+        ></button-->
+    
+    <a-scene
+      vr-mode-ui="enabled: false"
+      loading-screen="dotsColor: white; backgroundColor: #24CAFF; enabled: false;"
+      device-orientation-permission-ui="enabled: false"
+      ar-session-notifier
+      cursor-modifier
+      renderer="antialias: true; logarithmicDepthBuffer: true; colorManagement: true; exposure:1; toneMapping:ACESFilmic; sortObjects: true;"
+      embedded arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false;"
+      light="defaultLightsEnabled: false"
+    >
+      <a-assets>
+        <img
+          id="groundTexture"
+          src="./image/transparent.png"
+          alt="배경이미지"
+        />
+        <!--a-asset-item
+          id="selectorglb"
+          src="./3D/c2_draco.glb"
+        ></a-asset-item-->
+        <!--a-asset-item
+          id="Msgglb"
+          src="./3D/reticle_white1.glb"
+        ></a-asset-item>
+        <a-asset-item
+          id="selector2glb"
+          src="./3D/water_animation.glb"
+        ></a-asset-item>
+        <video
+          src="./MP4/Geobuksun-heritage.mp4"
+          type="video/mp4"
+          preload="auto"
+          id="vid"
+          response-type="arraybuffer"
+          crossorigin="anonymous"
+          webkit-playsinline
+     
+          playsinline
+        ></video-->
+      </a-assets>
+
+      <a-cylinder
+        id="ground"
+        class="collidable"
+        src="#groundTexture"
+        radius="82"
+        height="0.3"
+        position="0 0 -1"
+        shadow="cast: true"
+        grid-selector
+        show-entity="image: #selector; text: #Msg-txt; text2: #Msg-txt2; text1: #Msg-txt1; image1: #selector2; image2: #selector3;"
+      >
+        <!--a-entity
+          id="Msg-txt"
+          visible="true"
+          gltf-model="#Msgglb"
+          scale="5 5 5"
+          position="0 0.7 -5"
+          rotation="0 0 0"
+          shadow="cast: true"
+          animation="property: rotation; to: 0 360 0; dur: 8000; delay: 200; loop: true"
+          animation-mixer
+          model-opacity
+          audiohandler
+        ></a-entity-->
+        <!--a-entity
+          id="selector"
+          gltf-model="#selectorglb"
+          scale="0.03 0.02 0.03"
+          rotation="0 0 0"
+          position="0 0.5 -15"
+          visible="false"
+          shadow="cast: true"
+          animation__click="property: visible; dur: 0; to: true; startEvents: switch"
+          animation__rotation="property: rotation; to: 0 360 0; dur: 30000; delay: 200; loop: true"
+          animation-mixer
+          model-opacity
+        ></a-entity-->
+
+        <a-troika-text
+          id="Msg-txt2"
+          visible="true"
+          position="0 1.5 -3"
+          color="white"
+          max-width="13"
+          max-height="50"
+          curve-radius="0"
+          scale="0.5 0.5 0.5"
+          font="./font/Pretendard-ExtraBold.otf"
+          value="        
+            바닥을 터치하면
+거북선을 물위에 띄울 수 있습니다."
+          align="center"
+        >
+        </a-troika-text>
+        <a-troika-text
+          id="Msg-txt1"
+          visible="true"
+          position="0 2 -0.5"
+          color="red"
+          max-width="13"
+          max-height="50"
+          curve-radius="0"
+          scale="0.5 0.5 0.5"
+          font="./font/white-cloud.ttf"
+          value="        
+AR 거북선 보기"
+          align="center"
+        >
+        </a-troika-text>
+        <!--a-video
+          id="selector2"
+          geometry="primitive: plane; height: 1.4; width: 3.2"
+          material="shader: chromakey; side: double; src: #vid; color: 0.1 0.9 0.2"
+          position="0 2.2 -2.4"
+          rotation="0 0 0"
+          visible="false"
+        >
+        </a-video>
+        <a-entity
+          id="selector3"
+          gltf-model="#selector2glb"
+          scale="0.5 0.5 0.5"
+          rotation="0 0 0"
+          position="0 0 -5"
+          shadow="cast: true"
+          visible="false"
+          animation__click="property: visible; dur: 0; to: true; startEvents: switch"
+          animation-mixer
+        ></a-entity-->
+      </a-cylinder>
+
+
+      <a-entity id="rig">
+        <a-camera positon="0 1.4 0" look-controls="enabled: false">
+          <a-entity raycaster="objects: .collidable" cursor="rayOrigin: mouse">
+          </a-entity>
+        </a-camera>
+      </a-entity>
+
+      <a-light type="ambient" intensity="0.7" castshadow="false"></a-light>
+      <a-shadow-light
+        type="spot"
+        far="18"
+        target="0 10 5"
+        mapsize="4096 4096"
+        position="0 10 5"
+      >
+      </a-shadow-light>
+      <a-shadow-plane dimensions="10 10" position="0 0 -5"> </a-shadow-plane>
+      <!-- Camera. -->
+    </a-scene>
+    <script>
+        const scene = document.querySelector('a-scene').object3D;
+
+        const dracoLoader = new THREE.DRACOLoader();
+        dracoLoader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.4.3/');
+
+        const loader = new THREE.GLTFLoader();
+        loader.setDRACOLoader(dracoLoader);
+
+        loader.load('./3D/c2_draco.glb', function (gltf) {
+            const model = gltf.scene;
+// 위치 설정 (x, y, z)
+            model.position.set(0, 2.2, -2.4);
+
+  // 회전 설정 (라디안 단위)
+            model.rotation.set(0, Math.PI, 0); // Y축 180도 회전
+
+  // 스케일 설정
+            model.scale.set(0.03, 0.02, 0.03); // 절반 크기
+
+
+
+        scene.add(model);
+        });
+    </script>
+    
+    <script src="./js/ocean-geobuk.js"></script>
+
+  </body>
+</html>
