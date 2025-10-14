@@ -105,95 +105,12 @@
         />
         <a-asset-item
           id="selectorglb"
-          src="./3D/Turtle_ship_Geobukseon.glb"
+          src="./3D/c2.glb"
         ></a-asset-item>
         <a-asset-item
           id="Msgglb"
           src="./3D/reticle_white1.glb"
-        ></a-asset-item>
-        <a-asset-item
-          id="selector2glb"
-          src="./3D/water_animation.glb"
-        ></a-asset-item>
-        <video
-          src="./MP4/Geobuksun-heritage.mp4"
-          type="video/mp4"
-          preload="auto"
-          id="vid"
-          response-type="arraybuffer"
-          crossorigin="anonymous"
-          webkit-playsinline
-     
-          playsinline
-        ></video>
-      </a-assets>
-
-      <a-cylinder
-        id="ground"
-        class="collidable"
-        src="#groundTexture"
-        radius="82"
-        height="0.3"
-        position="0 0 -1"
-        shadow="cast: true"
-        grid-selector
-        show-entity="image: #selector; text: #Msg-txt; text2: #Msg-txt2; text1: #Msg-txt1; image1: #selector2; image2: #selector3;"
-      >
-        <a-entity
-          id="Msg-txt"
-          visible="true"
-          gltf-model="#Msgglb"
-          scale="5 5 5"
-          position="0 0.7 -5"
-          rotation="0 0 0"
-          shadow="cast: true"
-          animation="property: rotation; to: 0 360 0; dur: 8000; delay: 200; loop: true"
-          animation-mixer
-          model-opacity
-          audiohandler
-        ></a-entity>
-        <a-entity
-          id="selector"
-          gltf-model="#selectorglb"
-          scale="0.03 0.02 0.03"
-          rotation="0 0 0"
-          position="0 0.5 -15"
-          visible="false"
-          shadow="cast: true"
-          animation__click="property: visible; dur: 0; to: true; startEvents: switch"
-          animation__rotation="property: rotation; to: 0 360 0; dur: 30000; delay: 200; loop: true"
-          animation-mixer
-          model-opacity
-        ></a-entity>
-
-        <a-troika-text
-          id="Msg-txt2"
-          visible="true"
-          position="0 1.5 -3"
-          color="white"
-          max-width="13"
-          max-height="50"
-          curve-radius="0"
-          scale="0.5 0.5 0.5"
-          font="./font/Pretendard-ExtraBold.otf"
-          value="        
-            바닥을 터치하면
-거북선을 물위에 띄울 수 있습니다."
-          align="center"
-        >
-        </a-troika-text>
-        <a-troika-text
-          id="Msg-txt1"
-          visible="true"
-          position="0 2 -0.5"
-          color="red"
-          max-width="13"
-          max-height="50"
-          curve-radius="0"
-          scale="0.5 0.5 0.5"
-          font="./font/white-cloud.ttf"
-          value="        
-AR 거북선 보기"
+     부 보기"
           align="center"
         >
         </a-troika-text>
@@ -243,3 +160,4 @@ AR 거북선 보기"
 
   </body>
 </html>
+
