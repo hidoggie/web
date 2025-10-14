@@ -253,7 +253,11 @@ AR 거북선 보기"
       <a-shadow-plane dimensions="10 10" position="0 0 -5"> </a-shadow-plane>
       <!-- Camera. -->
     </a-scene>
-    <script>
+
+    <script type="module">
+        import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.150.1/build/three.module.js';
+        import { OrbitControls } from 'https://cdn.jsdelivr.net/npm/three@0.150.1/examples/jsm/controls/OrbitControls.js';
+
     const camera = new THREE.PerspectiveCamera(
   75, // 시야각
   window.innerWidth / window.innerHeight, // 화면 비율
