@@ -1,0 +1,177 @@
+ body {
+        background: #000;
+      }
+      .arjs-loader {
+        width: 10em;
+        height: 10em;
+        border-radius: 100%;
+        margin: 100px auto;
+        border: 1.1em solid rgba(255, 255, 255, 0.2);
+        border-left-color: #fff;
+        -webkit-animation: load 1.1s infinite linear; /* Chrome, Safari, Opera */
+        animation: load 1.1s infinite linear;
+      }
+
+      @-webkit-keyframes load {
+        0% {
+          -ms-transform: rotate(7deg); /* IE 9 */
+          -webkit-transform: rotate(7deg); /* Chrome, Safari, Opera */
+          transform: rotate(7deg);
+        }
+        100% {
+          -ms-transform: rotate(360deg); /* IE 9 */
+          -webkit-transform: rotate(360deg); /* Chrome, Safari, Opera */
+          transform: rotate(360deg);
+        }
+      }
+      @keyframes load {
+        0% {
+          -ms-transform: rotate(7deg); /* IE 9 */
+          -webkit-transform: rotate(7deg); /* Chrome, Safari, Opera */
+          transform: rotate(7deg);
+        }
+        100% {
+          -ms-transform: rotate(360deg); /* IE 9 */
+          -webkit-transform: rotate(360deg); /* Chrome, Safari, Opera */
+          transform: rotate(360deg);
+        }
+      }
+
+      .mainUI {
+        border: 0px solid pink;
+        position: fixed;
+        top: 0px;
+        width: 100%;
+        height: 100%;
+        z-index: 1;
+        pointer-events: none; /* allow click-through in transparent areas */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .regionUI {
+        border: 0px solid yellow;
+        position: absolute;
+        display: flex;
+        flex-direction: row;
+        pointer-events: none;
+      }
+
+      .buttonUI {
+        border: 0px solid lime;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        pointer-events: auto;
+        filter: drop-shadow(0px 0px 20px white);
+      }
+
+       .HomeButton {
+        background-color: White;
+        background-image: url("https://guide1.ivyro.net/oceanbreeze/AR/image/home.png");
+        background-size: cover;
+        background-position: center;
+        border: none;
+        padding: 5px;
+        display: inline-block;
+        margin: 1px 1px;
+        cursor: pointer;
+        border-radius: 50%;
+        position: fixed;
+        bottom: 5%;
+        left: 5%;
+        width: 40px;
+        height: 40px;
+        /*display: flex;*/
+        justify-content: center;
+        align-items: center;
+        z-index: 99995;
+        transition: all 0.5s;
+        cursor: pointer;
+      }
+      .HomeButton:hover {
+        background-color: Gold;
+      }
+
+            
+      .VidStopBtn {
+        background-color: White;
+        background-image: url("https://guide1.ivyro.net/oceanbreeze/AR/image/vid-stop.png");
+        background-size: cover;
+        background-position: center;
+        border: none;
+        padding: 5px;
+        display: none;
+        margin: 1px 1px;
+        cursor: pointer;
+        border-radius: 50%;
+        position: fixed;
+        bottom: 5%;
+        left: 85%;
+        width: 40px;
+        height: 40px;
+        /*display: flex;*/
+        justify-content: center;
+        align-items: center;
+        z-index: 99995;
+        transition: all 0.5s;
+        cursor: pointer;
+      }
+      .VidStopBtn:hover {
+        background-color: Gold;
+      }
+      .VidStartBtn {
+        background-color: White;
+        background-image: url("https://guide1.ivyro.net/oceanbreeze/AR/image/video-play-btn.png");
+        background-size: cover;
+        background-position: center;
+        border: none;
+        padding: 5px;
+        display: none;
+        margin: 1px 1px;
+        cursor: pointer;
+        border-radius: 50%;
+        position: fixed;
+        bottom: 5%;
+        left: 85%;
+        width: 40px;
+        height: 40px;
+        /*display: flex;*/
+        justify-content: center;
+        align-items: center;
+        z-index: 99995;
+        transition: all 0.5s;
+        cursor: pointer;
+      }
+      .VidStartBtn:hover {
+        background-color: Gold;
+      }
+
+.DocentMapButton {
+        background-color: White;
+        background-image: url("https://guide1.ivyro.net/oceanbreeze/AR/image/docentmap.png");
+        background-size: cover;
+        background-position: center;
+        border: none;
+        padding: 5px;
+        display: inline-block;
+        margin: 1px 1px;
+        cursor: pointer;
+        border-radius: 50%;
+        position: fixed;
+        top: 5%;
+        left: 85%;
+        width: 40px;
+        height: 40px;
+        /*display: flex;*/
+        justify-content: center;
+        align-items: center;
+        z-index: 99995;
+        transition: all 0.5s;
+        cursor: pointer;
+      }
+.DocentMapButton:hover {
+        background-color: Gold;
+      }
+
