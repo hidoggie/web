@@ -92,13 +92,20 @@
            onclick="window.open('https://guide1.ivyro.net/oceanbreeze/AR/docent-map.html','_self');"
         ></button-->
     
-    <a-scene
+    <!--a-scene
       vr-mode-ui="enabled: false"
       loading-screen="dotsColor: white; backgroundColor: #24CAFF; enabled: false;"
       device-orientation-permission-ui="enabled: false"
       ar-session-notifier
       cursor-modifier
       renderer="antialias: true; logarithmicDepthBuffer: true; colorManagement: true; exposure:1; toneMapping:ACESFilmic; sortObjects: true;"
+      embedded arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false;"
+      light="defaultLightsEnabled: false"
+  -->
+    <a-scene
+      vr-mode-ui="enabled: false"
+      loading-screen="dotsColor: white; backgroundColor: #24CAFF; enabled: false;"
+      renderer="logarithmicDepthBuffer: true"
       embedded arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false;"
       light="defaultLightsEnabled: false"
     >
@@ -133,7 +140,7 @@
         ></video-->
       </a-assets>
 
-      <a-cylinder
+      <!--a-cylinder
         id="ground"
         class="collidable"
         src="#groundTexture"
@@ -143,7 +150,7 @@
         shadow="cast: true"
         grid-selector
         show-entity="image: #selector; text: #Msg-txt; text2: #Msg-txt2; text1: #Msg-txt1; image1: #selector2; image2: #selector3;"
-      >
+    -->
         <!--a-entity
           id="Msg-txt"
           visible="true"
@@ -171,7 +178,7 @@
           model-opacity
         ></a-entity-->
 
-        <a-troika-text
+        <!--a-troika-text
           id="Msg-txt2"
           visible="true"
           position="0 1.5 -3"
@@ -201,7 +208,7 @@
 AR 거북선 보기"
           align="center"
         >
-        </a-troika-text>
+        </a-troika-text-->
         <!--a-video
           id="selector2"
           geometry="primitive: plane; height: 1.4; width: 3.2"
@@ -222,15 +229,15 @@ AR 거북선 보기"
           animation__click="property: visible; dur: 0; to: true; startEvents: switch"
           animation-mixer
         ></a-entity-->
-      </a-cylinder>
+      <!--/a-cylinder-->
 
 
-      <a-entity id="rig">
+      <!--a-entity id="rig">
         <a-camera positon="0 1.4 0" look-controls="enabled: false">
           <a-entity raycaster="objects: .collidable" cursor="rayOrigin: mouse">
           </a-entity>
         </a-camera>
-      </a-entity>
+      </a-entity-->
 
       <a-light type="ambient" intensity="0.7" castshadow="false"></a-light>
       <a-shadow-light
