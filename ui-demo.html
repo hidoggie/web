@@ -287,10 +287,10 @@ renderer.domElement.addEventListener('click', (event) => {
         loader.load('./3D/c2_draco.glb', function (gltf) {
             const model = gltf.scene;
 // 위치 설정 (x, y, z)
-            model.position.set(0, 2.2, -2.4);
+            model.position.set(0, 1.2, -2.4);
 
   // 회전 설정 (라디안 단위)
-            model.rotation.set(0, Math.PI, 0); // Y축 180도 회전
+            model.rotation.set(-10, 0, 0); // Y축 180도 회전
 
   // 스케일 설정
             model.scale.set(0.03, 0.02, 0.03); // 절반 크기
