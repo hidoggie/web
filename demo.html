@@ -94,7 +94,7 @@
            onclick="window.open('https://guide1.ivyro.net/oceanbreeze/AR/docent-map.html','_self');"
         ></button-->
     
-    <!--a-scene
+    <a-scene
       vr-mode-ui="enabled: false"
       loading-screen="dotsColor: white; backgroundColor: #24CAFF; enabled: false;"
       device-orientation-permission-ui="enabled: false"
@@ -103,14 +103,14 @@
       renderer="antialias: true; logarithmicDepthBuffer: true; colorManagement: true; exposure:1; toneMapping:ACESFilmic; sortObjects: true;"
       embedded arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false;"
       light="defaultLightsEnabled: false"
-  -->
-    <a-scene
+    >
+    <!--a-scene
       vr-mode-ui="enabled: false"
       loading-screen="dotsColor: white; backgroundColor: #24CAFF; enabled: false;"
       renderer="logarithmicDepthBuffer: true"
       embedded arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false;"
       light="defaultLightsEnabled: false"
-    >
+  -->
       <a-assets>
         <img
           id="groundTexture"
@@ -234,14 +234,14 @@ AR 거북선 보기"
       <!--/a-cylinder-->
 
 
-      <!--a-entity id="rig">
+      <a-entity id="rig">
         <a-camera positon="0 1.4 0" look-controls="enabled: false">
           <a-entity raycaster="objects: .collidable" cursor="rayOrigin: mouse">
           </a-entity>
         </a-camera>
-      </a-entity-->
+      </a-entity>
 
-      <a-entity camera></a-entity>
+      <!--a-entity camera></a-entity-->
 
       <a-light type="ambient" intensity="0.7" castshadow="false"></a-light>
       <a-shadow-light
