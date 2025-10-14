@@ -9,10 +9,6 @@
 
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
-    <!--script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
-    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/donmccurdy/aframe-extras@v7.0.0/dist/aframe-extras.min.js"></script-->
-
     <script src="./js/aframe120.js"></script>
     
     <script src="./js/aframe-ar-nft-3.js"></script>
@@ -25,8 +21,6 @@
     <script src="./js/aframe-troika-text.js"></script>
     <script src="./js/model-opacity.js"></script>
     <script src="./js/aframe-light-control.js"></script>
-    <!--script src="https://cdn.jsdelivr.net/npm/three@0.150.1/examples/js/controls/OrbitControls.js"></script-->
-
 
     <link rel="stylesheet" href="./css/ocean-safe.css" />
     <ink rel="stylesheet" href="ocean-geobuk.css" />
@@ -45,7 +39,6 @@
         height: fill-available;
       }
     </style>
- 
   </head>
   
   <body style="margin: 0px; overflow: hidden">
@@ -87,12 +80,12 @@
            onclick="vidstart();"
     ></button>
 
-        <!--button
+        <button
            aria-label="도슨트 맵 버튼"
            class="DocentMapButton"
            id="docentmap-btn"
            onclick="window.open('https://guide1.ivyro.net/oceanbreeze/AR/docent-map.html','_self');"
-        ></button-->
+        ></button>
     
     <a-scene
       vr-mode-ui="enabled: false"
@@ -104,13 +97,6 @@
       arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false;"
       light="defaultLightsEnabled: false"
     >
-    <!--a-scene
-      vr-mode-ui="enabled: false"
-      loading-screen="dotsColor: white; backgroundColor: #24CAFF; enabled: false;"
-      renderer="logarithmicDepthBuffer: true"
-      embedded arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false;"
-      light="defaultLightsEnabled: false"
-  -->
       <a-assets>
         <img
           id="groundTexture"
@@ -129,7 +115,7 @@
           id="selector2glb"
           src="./3D/water_animation.glb"
         ></a-asset-item>
-        <!--video
+        <video
           src="./MP4/Geobuksun-heritage.mp4"
           type="video/mp4"
           preload="auto"
@@ -139,7 +125,7 @@
           webkit-playsinline
      
           playsinline
-        ></video-->
+        ></video>
       </a-assets>
 
       <a-cylinder
@@ -211,7 +197,7 @@ AR 거북선 보기"
           align="center"
         >
         </a-troika-text>
-        <!--a-video
+        <a-video
           id="selector2"
           geometry="primitive: plane; height: 1.4; width: 3.2"
           material="shader: chromakey; side: double; src: #vid; color: 0.1 0.9 0.2"
@@ -219,7 +205,7 @@ AR 거북선 보기"
           rotation="0 0 0"
           visible="false"
         >
-        </a-video-->
+        </a-video>
         <a-entity
           id="selector3"
           gltf-model="#selector2glb"
@@ -241,8 +227,6 @@ AR 거북선 보기"
         </a-camera>
       </a-entity>
 
-      <!--a-entity camera></a-entity-->
-
       <a-light type="ambient" intensity="0.7" castshadow="false"></a-light>
       <a-shadow-light
         type="spot"
@@ -254,79 +238,8 @@ AR 거북선 보기"
       </a-shadow-light>
       <a-shadow-plane dimensions="10 10" position="0 0 -5"> </a-shadow-plane>
       <!-- Camera. -->
-    </a-scene>
-
-    <!--script type="module">
-    import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.150.1/build/three.module.js';
-    import { OrbitControls } from 'https://cdn.jsdelivr.net/npm/three@0.150.1/examples/jsm/controls/OrbitControls.js';
-   
-//    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(
-  75, // 시야각
-  window.innerWidth / window.innerHeight, // 화면 비율
-  0.1, // near
-  1000 // far
-);
-camera.position.set(0, 1, 3); // 카메라 위치 설정
-
-// 렌더러 생성
-const renderer = new THREE.WebGLRenderer({ antialias: true });
-renderer.setSize(window.innerWidth, window.innerHeight);
-document.body.appendChild(renderer.domElement);
-
-// OrbitControls 연결
-const controls = new OrbitControls(camera, renderer.domElement);
-        controls.enableDamping = true;
-        controls.dampingFactor = 0.05;
-        controls.enableZoom = true;
-        controls.enableRotate = true;
-
-        const raycaster = new THREE.Raycaster();
-const mouse = new THREE.Vector2();
-
-renderer.domElement.addEventListener('click', (event) => {
-  mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-  mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-
-  raycaster.setFromCamera(mouse, camera);
-  const intersects = raycaster.intersectObjects(scene.children, true);
-
-  if (intersects.length > 0) {
-    console.log('모델 터치됨:', intersects[0].object.name);
-    // 원하는 동작 실행
-  }
-});
-
-        const scene = document.querySelector('a-scene').object3D;
-
-        const dracoLoader = new THREE.DRACOLoader();
-        dracoLoader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.4.3/');
-
-        const loader = new THREE.GLTFLoader();
-        loader.setDRACOLoader(dracoLoader);
-
-        loader.load('./3D/c2_draco.glb', function (gltf) {
-            const model = gltf.scene;
-// 위치 설정 (x, y, z)
-            model.position.set(0, 1.2, -2.4);
-
-  // 회전 설정 (라디안 단위)
-            model.rotation.set(-10, 0, 0); // Y축 180도 회전
-
-  // 스케일 설정
-            model.scale.set(0.03, 0.02, 0.03); // 절반 크기
-
-
-
-        scene.add(model);
-        });
-    </script-->
-    
+    </a-scene>    
     <script src="./js/ocean-geobuk.js"></script>
 
   </body>
 </html>
-
-
-
-
