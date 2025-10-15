@@ -33,11 +33,27 @@
     />
     
     <style>
-      body {
-        height: 100vh;
-        height: -webkit-fill-available;
-        height: fill-available;
-      }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: calc(var(--vh, 1vh) * 100);
+            overflow: hidden; /* 불필요한 스크롤바 방지 */
+        }
+
+        a-scene {
+            width: 100%;
+            height: calc(var(--vh, 1vh) * 100);
+        }
+
+        #ar-view { width: 100%; height: 100%; }
+
     </style>
   </head>
   
@@ -86,9 +102,12 @@
            id="docentmap-btn"
            onclick="window.open('https://guide1.ivyro.net/oceanbreeze/AR/docent-map.html','_self');"
         ></button>
+
+        <div id="ar-view">
     
     <a-scene
             id="scene"
+            loading-screen="dotsColor: white; backgroundColor: #24CAFF; enabled: false;"
             vr-mode-ui="enabled: false"
             arjs="sourceType: webcam; videoTexture: true; debugUIEnabled: false;"
             renderer="logarithmicDepthBuffer: true"
@@ -247,9 +266,10 @@ AR 의정부 보기"
       <a-shadow-plane dimensions="10 10" position="0 0 -5"> </a-shadow-plane>
       <!-- Camera. -->
     </a-scene>    
+    </div>
+
     <script src="./js/ocean-geobuk.js"></script>
     <script>
-    document.addEventListener('DOMContentLoaded', () => {
         const sceneEl = document.querySelector('a-scene');
         const Selector = document.getElementById('selector');
         const Selector2 = document.getElementById('selector2');
@@ -258,6 +278,7 @@ AR 의정부 보기"
         const Text1 = document.getElementById('Msg-txt1');
         const Text2 = document.getElementById('Msg-txt2');
 
+    document.addEventListener('DOMContentLoaded', () => {
         sceneEl.addEventListener('loaded', () => {
         // 'mousedown' (PC 클릭)과 'touchstart' (모바일 터치) 이벤트를 감지합니다.
         // { passive: false } 옵션을 여기서 직접 설정합니다.
