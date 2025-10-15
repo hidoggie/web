@@ -12,14 +12,14 @@
     <script src="./js/aframe120.js"></script>
     
     <script src="./js/aframe-ar-nft-3.js"></script>
-    <script src="./js/gridhelper.js"></script>
+    <!--script src="./js/gridhelper.js"></script-->
     <script src="./js/aframe-extra-611.js"></script>
     
     <script src="./js/aframe-chromakey.js"></script>
-    <script src="./js/grid-selector.js"></script>
+    <!--script src="./js/grid-selector.js"></script-->
     <script src="./js/aframe-gif-shader.js"></script>
     <script src="./js/aframe-troika-text.js"></script>
-    <script src="./js/model-opacity.js"></script>
+    <!--script src="./js/model-opacity.js"></script-->
     <script src="./js/aframe-light-control.js"></script>
 
     <link rel="stylesheet" href="./css/ocean-safe.css" />
@@ -88,14 +88,13 @@
         ></button>
     
     <a-scene
-      vr-mode-ui="enabled: false"
-      loading-screen="dotsColor: white; backgroundColor: #24CAFF; enabled: false;"
-      device-orientation-permission-ui="enabled: false"
-      ar-session-notifier
-      cursor-modifier
-      renderer="antialias: true; logarithmicDepthBuffer: true; colorManagement: true; exposure:1; toneMapping:ACESFilmic; sortObjects: true;"
-      arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false;"
-      light="defaultLightsEnabled: false"
+            id="scene"
+            vr-mode-ui="enabled: false"
+            arjs="sourceType: webcam; videoTexture: true; debugUIEnabled: false;"
+            renderer="logarithmicDepthBuffer: true"
+            emitevents="true" 
+            cursor="rayOrigin: mouse"
+            raycaster="objects: #Msg-txt"
     >
       <a-assets>
         <img
@@ -122,8 +121,7 @@
           id="vid"
           response-type="arraybuffer"
           crossorigin="anonymous"
-          webkit-playsinline
-     
+          webkit-playsinline     
           playsinline
         ></video>
       </a-assets>
@@ -136,8 +134,8 @@
         height="0.3"
         position="0 0 -1"
         shadow="cast: true"
-        grid-selector
         show-entity="image: #selector; text: #Msg-txt; text2: #Msg-txt2; text1: #Msg-txt1; image1: #selector2; image2: #selector3;"
+        selective-click
       >
         <a-entity
           id="Msg-txt"
@@ -149,8 +147,8 @@
           shadow="cast: true"
           animation="property: rotation; to: 0 360 0; dur: 8000; delay: 200; loop: true"
           animation-mixer
-          model-opacity
           audiohandler
+          selective-click
         ></a-entity>
         <a-entity
           id="selector"
@@ -163,7 +161,7 @@
           animation__click="property: visible; dur: 0; to: true; startEvents: switch"
           animation__rotation="property: rotation; to: 0 360 0; dur: 30000; delay: 200; loop: true"
           animation-mixer
-          model-opacity
+          selective-click
         ></a-entity>
 
         <a-troika-text
@@ -178,8 +176,9 @@
           font="./font/Pretendard-ExtraBold.otf"
           value="        
             바닥을 터치하면
-거북선을 물위에 띄울 수 있습니다."
+AR 의정부에 대해 안내합니다."
           align="center"
+          selective-click
         >
         </a-troika-text>
         <a-troika-text
@@ -195,6 +194,7 @@
           value="        
 AR 의정부 보기"
           align="center"
+          selective-click
         >
         </a-troika-text>
         <a-video
@@ -204,6 +204,7 @@ AR 의정부 보기"
           position="0 2.2 -2.4"
           rotation="0 0 0"
           visible="false"
+          selective-click
         >
         </a-video>
         <a-entity
@@ -216,6 +217,7 @@ AR 의정부 보기"
           visible="false"
           animation__click="property: visible; dur: 0; to: true; startEvents: switch"
           animation-mixer
+          selective-click
         ></a-entity>
       </a-cylinder>
 
@@ -227,9 +229,10 @@ AR 의정부 보기"
         </a-camera>
       </a-entity-->
       
-      <a-camera position="0 0 0" look-controls>
-        <a-entity cursor="rayOrigin: mouse"></a-entity>
-      </a-camera>
+      <a-entity movement-controls="fly: true">
+        <a-entity cursor="rayOrigin: mouse" raycaster="objects: #Msg-txt" position="0 1.6 0" camera look-controls="touchEnabled: false; mouseEnabled: false" wasd-controls>
+        </a-entity>
+      </a-entity>
     
 
       <a-light type="ambient" intensity="0.7" castshadow="false"></a-light>
@@ -245,6 +248,64 @@ AR 의정부 보기"
       <!-- Camera. -->
     </a-scene>    
     <script src="./js/ocean-geobuk.js"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const sceneEl = document.querySelector('a-scene');
+        const Selector = document.getElementById('selector');
+        const Selector2 = document.getElementById('selector2');
+        const Selector3 = document.getElementById('selector3');
+        const Trigger = document.getElementById('Msg-txt');
+        const Text1 = document.getElementById('Msg-txt1');
+        const Text2 = document.getElementById('Msg-txt2');
+
+        sceneEl.addEventListener('loaded', () => {
+        // 'mousedown' (PC 클릭)과 'touchstart' (모바일 터치) 이벤트를 감지합니다.
+        // { passive: false } 옵션을 여기서 직접 설정합니다.
+          sceneEl.canvas.addEventListener('mousedown', onSceneClick, { passive: false });
+          sceneEl.canvas.addEventListener('touchstart', onSceneClick, { passive: false });
+        });
+    })
+        // ✨ 3. 클릭/터치 시 실행될 새로운 함수
+    function onSceneClick(event) {
+
+        event.stopPropagation();
+        event.preventDefault();
+        
+        const raycaster = new THREE.Raycaster();
+        const mouse = new THREE.Vector2();
+
+        // 클릭한 화면 좌표를 3D 공간 좌표로 변환합니다.
+        if (event.type === 'touchstart') {
+            mouse.x = (event.touches[0].clientX / window.innerWidth) * 2 - 1;
+            mouse.y = - (event.touches[0].clientY / window.innerHeight) * 2 + 1;
+        } else {
+            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
+        }
+    
+    }
+
+    AFRAME.registerComponent('selective-click', {
+        init: function () {
+           this.el.addEventListener('click', (evt) => {
+            if (this.el.id === 'Msg-txt') {
+              Selector.setAttribute("visible", "true");
+              Selector2.setAttribute("visible", "true");
+              Selector3.setAttribute("visible", "true");
+
+              Trigger.setAttribute("visible", "false");
+              Text1.setAttribute("visible", "false");
+              Text2.setAttribute("visible", "false");
+            } else {
+        // 아무 반응 없음
+             evt.stopPropagation();
+             evt.preventDefault();
+            }
+        });
+      }
+    });
+ 
+    </script>
 
   </body>
 </html>
