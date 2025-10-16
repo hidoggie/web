@@ -23,7 +23,7 @@
     <script src="./js/aframe-light-control.js"></script>
 
     <link rel="stylesheet" href="./css/ocean-safe.css" />
-    <ink rel="stylesheet" href="ocean-geobuk.css" />
+    <ink rel="stylesheet" href="./css/ocean-geobuk.css" />
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
@@ -117,18 +117,13 @@
             id="scene"
             loading-screen="dotsColor: white; backgroundColor: #24CAFF; enabled: false;"
             vr-mode-ui="enabled: false"
-            arjs="sourceType: webcam; videoTexture: true; debugUIEnabled: false;"
+            embedded arjs="sourceType: webcam; videoTexture: true; debugUIEnabled: false;"
             renderer="logarithmicDepthBuffer: true"
             emitevents="true" 
             cursor="rayOrigin: mouse"
             raycaster="objects: #Msg-txt"
     >
       <a-assets>
-        <img
-          id="groundTexture"
-          src="./image/transparent.png"
-          alt="배경이미지"
-        />
         <a-asset-item
           id="selectorglb"
           src="./3D/pavil.glb"
@@ -137,10 +132,7 @@
           id="Msgglb"
           src="./3D/reticle_white1.glb"
         ></a-asset-item-->
-        <a-asset-item
-          id="Msgglb"
-          src="./image/gate_100.jpg"
-        ></a-asset-item>
+        <img id="Msgglb" src="./image/gate_100.jpg">
         <a-asset-item
           id="selector2glb"
           src="./3D/uijangbongjiheukdallyeong.glb"
@@ -168,7 +160,7 @@
         show-entity="image: #selector; text: #Msg-txt; text2: #Msg-txt2; text1: #Msg-txt1; image1: #selector2; image2: #selector3;"
         selective-click
     -->
-        <a-entity
+        <!--a-entity
           id="Msg-txt"
           visible="true"
           gltf-model="#Msgglb"
@@ -180,7 +172,8 @@
           animation-mixer
           audiohandler
           selective-click
-        ></a-entity>
+        ></a-entity-->
+        <a-image id="Msg-txt" src="#Msgglb" position="0 1 -3" crossorigin="anonymous" selective-click></a-image>
         <a-entity
           id="selector"
           gltf-model="#selectorglb"
@@ -188,7 +181,7 @@
           rotation="0 0 0"
           position="0.3 0.2 -8"
           visible="false"
-          shadow="cast: true"
+          
           animation__click="property: visible; dur: 0; to: true; startEvents: switch"
           animation__rotation="property: rotation; to: 0 360 0; dur: 30000; delay: 200; loop: true"
           animation-mixer
@@ -263,6 +256,8 @@ AR 의정부 보기"
       <a-entity movement-controls="fly: true">
         <a-entity cursor="rayOrigin: mouse" raycaster="objects: #Msg-txt" position="0 1.6 0" camera look-controls="touchEnabled: false; mouseEnabled: false" wasd-controls>
         </a-entity>
+        <a-light type="ambient" intensity="2"></a-light>
+
       </a-entity>    
 
       <a-light type="ambient" intensity="0.7" castshadow="false"></a-light>
@@ -276,6 +271,7 @@ AR 의정부 보기"
       </a-shadow-light>
       <a-shadow-plane dimensions="10 10" position="0 0 -5"> </a-shadow-plane>
       <!-- Camera. -->
+      
     </a-scene>    
   </div>
     <script src="./js/ocean-geobuk.js"></script>
@@ -287,6 +283,7 @@ AR 의정부 보기"
         const Trigger = document.getElementById('Msg-txt');
         const Text1 = document.getElementById('Msg-txt1');
         const Text2 = document.getElementById('Msg-txt2');
+        const StartBtn = document.getElementById('start_btn');
 
     document.addEventListener('DOMContentLoaded', () => {
         sceneEl.addEventListener('loaded', () => {
@@ -321,7 +318,8 @@ AR 의정부 보기"
            this.el.addEventListener('click', (evt) => {
             if (this.el.id === 'Msg-txt') {
               Selector.setAttribute("visible", "true");
-              Selector2.setAttribute("visible", "true");
+              StartBtn.style.display="inline-block";
+//              Selector2.setAttribute("visible", "true");
               Selector3.setAttribute("visible", "true");
 
               Trigger.setAttribute("visible", "false");
